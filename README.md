@@ -12,6 +12,13 @@
 ```
 make WEBTILES=y
 cd crawl-ref/source/ && python webserver/server.py
+
+{"msg":"login","username":"crawlbot","password":"123"}
+{"msg":"play","game_id":"dcss-web-trunk"}
+{"msg":"key","keycode":-253}
+{"msg":"key","keycode":19}
+
+{"msg": "pong"}
 ```
 
 ./crawl -webtiles-socket "zzz.sock" -await-connection

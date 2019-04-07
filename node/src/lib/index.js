@@ -1,13 +1,3 @@
-/*
-{"msg":"login","username":"crawlbot","password":"123"}
-{"msg":"play","game_id":"dcss-web-trunk"}
-{"msg":"key","keycode":-253}
-{"msg":"key","keycode":19}
-
-{"msg": "ping"}
-{"msgs":[{"msg": "ping"}]}
-*/
-
 const WebSocket = require('ws');
 
 function affirmHealth(pingTimeout) {

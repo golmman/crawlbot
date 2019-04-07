@@ -1,0 +1,8 @@
+[package]
+name = "crawlbot"
+version = "0.1.0"
+authors = ["Dirk Kretschmann <kretschmanndi@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+websocket = "0.22.3"
