@@ -9,3 +9,14 @@
 * Use tornado 4.5.3
   * pip install 'tornado==4.5.3' --force-reinstall
 
+```
+make WEBTILES=y
+cd crawl-ref/source/ && python webserver/server.py
+```
+
+./crawl -webtiles-socket "zzz.sock" -await-connection
+
+Socket url: ws://localhost:8080
+
+https://github.com/websockets/ws
+

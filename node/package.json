@@ -1,0 +1,52 @@
+{
+  "name": "crawlbot",
+  "version": "1.0.0",
+  "description": "crawlbot",
+  "main": "index.js",
+  "directories": {
+    "bin": "src/bin",
+    "doc": "src/doc",
+    "example": "src/example",
+    "lib": "src/lib",
+    "man": "src/man",
+    "test": "src/test"
+  },
+  "scripts": {
+    "pretest": "eslint src/**",
+    "test": "nyc mocha src/test/ --recursive",
+    "posttest": "nyc check-coverage",
+    "start-dev": "node src/lib/index.js --stage=dev --logLevel=debug",
+    "start": "node src/lib/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/dirkkr/crawlbot.git"
+  },
+  "author": "dirk",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0"
+  },
+  "dependencies": {
+    "ws": "^6.2.1"
+  },
+  "nyc": {
+    "all": true,
+    "include": [
+      "src/lib/**"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "statements": 75,
+    "lines": 75,
+    "functions": 75,
+    "branches": 50
+  }
+}
