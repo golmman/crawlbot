@@ -1,43 +1,39 @@
+
 extern crate websocket;
 
 use std::io::stdin;
 use std::sync::mpsc::channel;
 use std::thread;
 
+
+
 use websocket::client::ClientBuilder;
 use websocket::{Message, OwnedMessage};
 
+mod logger;
+
 const CONNECTION_URL: &str = "ws://localhost:8080/socket";
 
-fn main() {
-    println!("Connecting to {}", CONNECTION_URL);
-
-    let client = ClientBuilder::new(CONNECTION_URL)
-        .unwrap()
-        .add_protocol("rust-websocket")
-        .connect_insecure()
-        .unwrap();
-
-    println!("Successfully connected");
-
-    let (mut ws_receiver, mut ws_sender) = client.split().unwrap();
-
-    let (async_sender_main, async_receiver) = channel();
-    let async_sender_aux = async_sender_main.clone();
-
-    let send_loop = thread::spawn(move || {
+fn test123(mut ws_sender: websocket::sender::Writer<std::net::TcpStream>, async_receiver: std::sync::mpsc::Receiver<websocket::OwnedMessage>) {
         loop {
-            // Send loop
             let message = match async_receiver.recv() {
                 Ok(m) => m,
                 Err(e) => {
-                    println!("Send Loop: {:?}", e);
+                    log_error!("Send Loop: {:?}", e);
                     return;
                 }
             };
 
-            if let OwnedMessage::Close(_) = message {
-                let _ = ws_sender.send_message(&message);
+            if let OwnedMessage::Close(close_data_option) = message {
+                log_info!("Server sent 'close'.");
+                if let Some(close_data) = close_data_option {
+                    log_info!(
+                        "Close was with status {:?} and reason {:?}.",
+                        close_data.status_code,
+                        close_data.reason,
+                    );
+                }
+                let _ = ws_sender.send_message(&Message::close());
                 return;
             }
 
@@ -45,13 +41,64 @@ fn main() {
             match ws_sender.send_message(&message) {
                 Ok(()) => (),
                 Err(e) => {
-                    println!("Send Loop: {:?}", e);
+                    log_error!("Send Loop: {:?}", e);
                     let _ = ws_sender.send_message(&Message::close());
                     return;
                 }
             }
         }
-    });
+    }
+
+fn main() {
+    let client = ClientBuilder::new(CONNECTION_URL)
+        .expect("Unable to create ClientBuilder")
+        .add_protocol("rust-websocket")
+        .connect_insecure()
+        .expect("Unable to connect to websocket");
+
+    log_info!("Successfully connected to {:?}", CONNECTION_URL);
+
+    let (mut ws_receiver, ws_sender) = client.split().unwrap();
+
+    let (async_sender_for_stdin, async_receiver) = channel();
+    let async_sender_for_ws_receiver = async_sender_for_stdin.clone();
+
+    // let send_loop = thread::spawn(move || {
+    //     loop {
+    //         let message = match async_receiver.recv() {
+    //             Ok(m) => m,
+    //             Err(e) => {
+    //                 log_error!("Send Loop: {:?}", e);
+    //                 return;
+    //             }
+    //         };
+
+    //         if let OwnedMessage::Close(close_data_option) = message {
+    //             log_info!("Server sent 'close'.");
+    //             if let Some(close_data) = close_data_option {
+    //                 log_info!(
+    //                     "Close was with status {:?} and reason {:?}.",
+    //                     close_data.status_code,
+    //                     close_data.reason,
+    //                 );
+    //             }
+    //             let _ = ws_sender.send_message(&Message::close());
+    //             return;
+    //         }
+
+    //         // Send the message
+    //         match ws_sender.send_message(&message) {
+    //             Ok(()) => (),
+    //             Err(e) => {
+    //                 log_error!("Send Loop: {:?}", e);
+    //                 let _ = ws_sender.send_message(&Message::close());
+    //                 return;
+    //             }
+    //         }
+    //     }
+    // });
+
+    let send_loop = thread::spawn(move || test123(ws_sender, async_receiver));
 
     let receive_loop = thread::spawn(move || {
         // Receive loop
@@ -60,7 +107,7 @@ fn main() {
                 Ok(m) => m,
                 Err(e) => {
                     println!("Receive Loop: {:?}", e);
-                    let _ = async_sender_aux.send(OwnedMessage::Close(None));
+                    let _ = async_sender_for_ws_receiver.send(OwnedMessage::Close(None));
                     return;
                 }
             };
@@ -68,11 +115,11 @@ fn main() {
             match message {
                 OwnedMessage::Close(_) => {
                     // Got a close message, so send a close message and return
-                    let _ = async_sender_aux.send(OwnedMessage::Close(None));
+                    let _ = async_sender_for_ws_receiver.send(OwnedMessage::Close(None));
                     return;
                 }
                 OwnedMessage::Ping(data) => {
-                    match async_sender_aux.send(OwnedMessage::Pong(data)) {
+                    match async_sender_for_ws_receiver.send(OwnedMessage::Pong(data)) {
                         // Send a pong in response
                         Ok(()) => (),
                         Err(e) => {
@@ -97,7 +144,7 @@ fn main() {
         let message = match trimmed {
             "/close" => {
                 // Close the connection
-                let _ = async_sender_main.send(OwnedMessage::Close(None));
+                let _ = async_sender_for_stdin.send(OwnedMessage::Close(None));
                 break;
             }
             // Send a ping
@@ -106,7 +153,7 @@ fn main() {
             _ => OwnedMessage::Text(trimmed.to_string()),
         };
 
-        match async_sender_main.send(message) {
+        match async_sender_for_stdin.send(message) {
             Ok(()) => (),
             Err(e) => {
                 println!("Main Loop: {:?}", e);

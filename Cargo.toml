@@ -5,4 +5,5 @@ authors = ["Dirk Kretschmann <kretschmanndi@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+chrono = "0.4"
 websocket = "0.22.3"
