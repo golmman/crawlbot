@@ -25,5 +25,9 @@ cd crawl-ref/source/ && python webserver/server.py
 
 Socket url: ws://localhost:8080
 
-https://github.com/websockets/ws
+https://github.com/websockets/ws  
+https://github.com/websockets-rs/rust-websocket/blob/master/examples/client.rs
 
+
+Async stdin:
+https://ticki.github.io/blog/making-terminal-applications-in-rust-with-termion/

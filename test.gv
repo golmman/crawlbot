@@ -1,14 +1,14 @@
-digraph g {
-	node [shape=plaintext];
-	A1 -> B1;
-	A2 -> B2;
-	A3 -> B3;
-	
-	A1 -> A2 [label=f];
-	A2 -> A3 [label=g];
-	B2 -> B3 [label="g'"];
-	B1 -> B3 [label="(g o f)'" tailport=s headport=s];
+digraph architecture {
+    graph [fontname=monospace];
+    node [fontname=monospace, shape=box];
+    edge [fontname=monospace];
 
-	{ rank=same; A1 A2 A3 }
-	{ rank=same; B1 B2 B3 } 
+    loop_stdin [color=burlywood1, style=filled]
+    loop_wsrecv [color=cornsilk2, style=filled]
+    loop_bot [color=cornsilk2, style=filled]
+    loop_wssend [color=cornsilk2, style=filled]
+
+    loop_stdin -> loop_bot;
+    loop_wsrecv -> loop_bot;
+    loop_bot -> loop_wssend;
 }
