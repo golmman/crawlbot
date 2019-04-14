@@ -1,45 +1,40 @@
 extern crate websocket;
 
-use websocket::OwnedMessage;
+use std::sync::mpsc::Sender;
 
 use super::super::*;
+use super::internal_message::InternalMessage;
 
-pub fn run_loop_stdin(
-    sender_loop_bot: std::sync::mpsc::Sender<String>,
-    sender: std::sync::mpsc::Sender<websocket::OwnedMessage>,
-) {
+pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
+    let mut pause = false;
+
     loop {
         let mut input = String::new();
-
-        stdin().read_line(&mut input).unwrap();
-
+        stdin().read_line(&mut input).expect("Unable to read from stdin.");
         let trimmed = input.trim();
 
         let message = match trimmed {
+            "" => {
+                if pause {
+                    pause = false;
+                    InternalMessage::Unpause
+                } else {
+                    pause = true;
+                    InternalMessage::Pause
+                }
+            }
+            "/get_status" => InternalMessage::GetStatus,
             "/close" => {
-                // Close the connection
-                let _ = sender.send(OwnedMessage::Close(None));
-                let _ = sender_loop_bot.send("/close".to_string());
+                let _ = sender_bot.send(InternalMessage::Close);
                 break;
             }
-            // Send a ping
-            "/ping" => OwnedMessage::Ping(b"PING".to_vec()),
-            // Otherwise, just send text
-            _ => OwnedMessage::Text(trimmed.to_string()),
+            _ => InternalMessage::Proxy(trimmed.to_string()),
         };
 
-        match sender.send(message) {
+        match sender_bot.send(message) {
             Ok(()) => (),
             Err(e) => {
-                log_error!("Main Loop: {:?}", e);
-                break;
-            }
-        }
-
-        match sender_loop_bot.send(trimmed.to_string()) {
-            Ok(()) => (),
-            Err(e) => {
-                log_error!("Main Loop: {:?}", e);
+                log_error!("An error occured when trying to send a message: {:?}", e);
                 break;
             }
         }

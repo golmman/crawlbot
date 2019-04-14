@@ -1,3 +1,4 @@
+pub mod internal_message;
 pub mod loop_bot;
 pub mod loop_stdin;
 pub mod loop_wsrecv;

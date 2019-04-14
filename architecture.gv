@@ -11,4 +11,9 @@ digraph architecture {
     loop_stdin -> loop_bot;
     loop_wsrecv -> loop_bot;
     loop_bot -> loop_wssend;
+
+    "crawl\nwebsocket" -> loop_wsrecv [color=gray]
+    loop_wssend -> "crawl\nwebsocket" [color=gray]
+
+    { rank=same; loop_wsrecv loop_wssend }
 }
