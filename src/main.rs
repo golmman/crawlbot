@@ -11,6 +11,8 @@ use websocket::sender::Writer;
 
 mod logger;
 mod loops;
+mod model;
+mod routines;
 
 use loops::loop_bot::run_loop_bot;
 use loops::loop_stdin::run_loop_stdin;

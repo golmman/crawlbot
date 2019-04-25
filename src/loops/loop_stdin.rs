@@ -5,12 +5,32 @@ use std::sync::mpsc::Sender;
 use super::super::*;
 use super::internal_message::InternalMessage;
 
+fn print_help() {
+    println!("-------------------------------------------------------------------------------");
+    println!();
+    println!();
+    println!("CRAWLBOT");
+    println!();
+    println!("commands:");
+    println!("/close          sends a close message to crawl, exits crawlbot");
+    println!("/get_status     prints a status report");
+    println!("/help           prints this help screen");
+    println!("<return key>    pauses/unpauses crawlbot");
+    println!();
+    println!();
+    println!("-------------------------------------------------------------------------------");
+}
+
 pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
-    let mut pause = false;
+    
+    print_help();
+    let mut pause = true;
 
     loop {
         let mut input = String::new();
-        stdin().read_line(&mut input).expect("Unable to read from stdin.");
+        stdin()
+            .read_line(&mut input)
+            .expect("Unable to read from stdin.");
         let trimmed = input.trim();
 
         let message = match trimmed {
@@ -24,7 +44,12 @@ pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
                 }
             }
             "/get_status" => InternalMessage::GetStatus,
-            "/close" => {
+            "/idle" => InternalMessage::Idle,
+            "/help" => {
+                print_help();
+                InternalMessage::Nothing
+            }
+            "/close" | "/c" => {
                 let _ = sender_bot.send(InternalMessage::Close);
                 break;
             }

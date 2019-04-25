@@ -3,10 +3,10 @@ digraph architecture {
     node [fontname=monospace, shape=box];
     edge [fontname=monospace];
 
-    loop_stdin [color=burlywood1, style=filled]
-    loop_wsrecv [color=cornsilk2, style=filled]
-    loop_bot [color=cornsilk2, style=filled]
-    loop_wssend [color=cornsilk2, style=filled]
+    loop_stdin [fillcolor=burlywood1, style="filled,rounded"]
+    loop_wsrecv [fillcolor=cornsilk2, style=filled]
+    loop_bot [fillcolor=cornsilk2, style=filled]
+    loop_wssend [fillcolor=cornsilk2, style=filled]
 
     loop_stdin -> loop_bot;
     loop_wsrecv -> loop_bot;

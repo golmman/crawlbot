@@ -1,0 +1,29 @@
+digraph architecture {
+    graph [fontname=monospace, splines=ortho];
+    node [fontname=monospace, shape=box];
+    edge [fontname=monospace];
+
+    test [fillcolor=burlywood1, style=filled, shape=diamond, label=
+    <test<br/><font point-size="10">test</font>>]
+
+    setup_game [fillcolor=burlywood1, style=filled, label=
+    <<table border="0" cellpadding="0" cellspacing="1">
+        <tr><td>setup game</td></tr>
+        <tr><td><font point-size="7">login</font></td></tr>
+        <tr><td><font point-size="7">play</font></td></tr>
+    </table>>]
+
+
+    loop_wsrecv [fillcolor=cornsilk2, style=filled]
+    loop_bot [fillcolor=cornsilk2, style=filled]
+    loop_wssend [fillcolor=cornsilk2, style=filled]
+
+    setup_game -> loop_bot;
+    loop_wsrecv -> loop_bot;
+    loop_bot -> loop_wssend;
+
+    "crawl\nwebsocket" -> loop_wsrecv [color=gray]
+    loop_wssend -> "crawl\nwebsocket" [color=gray]
+
+    { rank=same; loop_wsrecv loop_wssend }
+}
