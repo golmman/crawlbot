@@ -12,7 +12,9 @@ pub enum InternalMessage {
     Pong(Vec<u8>),
     Unpause,
 
-    Idle,
+    Idle5,
+    Idle10,
+    Start,
 
     CrawlInput(String),
     CrawlOutput(String),

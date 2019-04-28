@@ -41,18 +41,18 @@ pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<Internal
                 }
             },
             OwnedMessage::Text(data) => {
-                let crawl_input: Value = serde_json::from_str(data.as_str()).unwrap();
-                let crawl_msgs: &Value = &crawl_input["msgs"];
-
                 if data.len() < 10000 {
                     log_info!("Text {:?}", data);
                 } else {
-                    log_warn!("Text was too long! {:?}", crawl_input);
+                    log_warn!("Text was too long! -> stored in debug{}.json", debug_counter);
                     let filename = format!("debug{}.json", debug_counter);
                     let mut file = File::create(filename).unwrap();
                     let _ = file.write_all(data.as_bytes());
                     debug_counter += 1;
                 }
+
+                let crawl_input: Value = serde_json::from_str(data.as_str()).unwrap();
+                let crawl_msgs: &Value = &crawl_input["msgs"];
 
                 for crawl_msg in crawl_msgs.as_array().unwrap() {
                     let _ = sender.send(InternalMessage::CrawlInput(crawl_msg.to_string()));

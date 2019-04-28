@@ -14,8 +14,12 @@ fn print_help() {
     println!("commands:");
     println!("/close          sends a close message to crawl, exits crawlbot");
     println!("/get_status     prints a status report");
+    println!("/idle5          lets crawlbot idle for 5 tics");
+    println!("/idle10         lets crawlbot idle for 10 tics");
     println!("/help           prints this help screen");
-    println!("<return key>    pauses/unpauses crawlbot");
+    println!("/start          starts a the game");
+    println!("/u              un-pauses crawlbot");
+    println!("<return key>    pauses crawlbot");
     println!();
     println!();
     println!("-------------------------------------------------------------------------------");
@@ -24,7 +28,6 @@ fn print_help() {
 pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
     
     print_help();
-    let mut pause = true;
 
     loop {
         let mut input = String::new();
@@ -34,21 +37,16 @@ pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
         let trimmed = input.trim();
 
         let message = match trimmed {
-            "" => {
-                if pause {
-                    pause = false;
-                    InternalMessage::Unpause
-                } else {
-                    pause = true;
-                    InternalMessage::Pause
-                }
-            }
+            "" => InternalMessage::Pause,
+            "/u" => InternalMessage::Unpause,
             "/get_status" => InternalMessage::GetStatus,
-            "/idle" => InternalMessage::Idle,
+            "/idle5" => InternalMessage::Idle5,
+            "/idle10" => InternalMessage::Idle10,
             "/help" => {
                 print_help();
                 InternalMessage::Nothing
             }
+            "/start" => InternalMessage::Start,
             "/close" | "/c" => {
                 let _ = sender_bot.send(InternalMessage::Close);
                 break;

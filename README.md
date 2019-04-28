@@ -20,9 +20,22 @@ cd crawl-ref/source/ && python webserver/server.py
 {"msg":"login","username":"crawlbot","password":"123"}
 {"msg":"play","game_id":"dcss-web-trunk"}
 {"msg":"key","keycode":-253} // down
+{"msg":"key","keycode":11} // return
 {"msg":"key","keycode":9} // auto-attack
 {"msg":"key","keycode":19} // save and exit
-{"msg": "input", "text": "o"} // explore
+{"msg": "input","text": "o"} // explore
+
+// PICK MINOTAUR FIGHTER AXE
+{"msg": "input","text": "b"}
+{"msg": "input","text": "a"}
+{"msg": "input","text": "c"}
+
+// ABANDON
+{"msg":"key","keycode":17}
+{"msg":"input","text":"yes\r"}
+{"msg":"input","text":"\r"}
+{"msg":"input","text":"\r"}
+{"msg":"input","text":"\r"}
 
 {"msg": "ping"}
 {"msg": "pong"}
@@ -33,8 +46,11 @@ Keycodes
 * right -251
 * up -254
 * down -253
+* return 11
 * esc 27
+* ctrl-a 1 ?? (b=2, c=3, ...)
 * ctrl-o 15
+* ctrl-q 17 ??
 * ctrl-s 19
 * tab 9
 

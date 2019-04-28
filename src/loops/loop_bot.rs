@@ -9,8 +9,12 @@ use serde_json::Value;
 use super::super::*;
 use super::internal_message::InternalMessage;
 
+use super::super::routines::create_routine_idle5;
+use super::super::routines::create_routine_idle10;
+use super::super::routines::create_routine_start;
 use super::super::routines::push_routine;
-use super::super::routines::NOTHING5;
+
+use super::super::model::GameState;
 
 pub fn run_loop_bot(
     receiver_stdin: Receiver<InternalMessage>,
@@ -18,6 +22,7 @@ pub fn run_loop_bot(
     sender_websocket: Sender<InternalMessage>,
 ) {
     let mut pause = true;
+    let mut game_state = GameState::new();
     let mut message_queue: VecDeque<InternalMessage> = VecDeque::new();
     let mut routine_queue: VecDeque<InternalMessage> = VecDeque::new();
 
@@ -41,7 +46,8 @@ pub fn run_loop_bot(
 
         if !pause {
             if routine_queue.is_empty() {
-                log_debug!("Routine queue is empty!");
+                log_debug!("Routine queue is empty, pausing now!");
+                message_queue.push_back(InternalMessage::Pause);
             } else {
                 let routine_message = routine_queue.pop_front().unwrap();
                 log_debug!("Popping from routine queue: {:?}", routine_message);
@@ -61,12 +67,19 @@ pub fn run_loop_bot(
         match message {
             InternalMessage::Pause => {
                 pause = true;
+                game_state.set_paused(true);
             }
             InternalMessage::Unpause => {
                 pause = false;
             }
-            InternalMessage::Idle => {
-                push_routine(&mut routine_queue, NOTHING5);
+            InternalMessage::Idle5 => {
+                push_routine(&mut routine_queue, create_routine_idle5);
+            }
+            InternalMessage::Idle10 => {
+                push_routine(&mut routine_queue, create_routine_idle10);
+            }
+            InternalMessage::Start => {
+                push_routine(&mut routine_queue, create_routine_start);
             }
             InternalMessage::GetStatus => {
                 log_debug!(",--- STATUS ---");
