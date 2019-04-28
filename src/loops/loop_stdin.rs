@@ -53,7 +53,7 @@ pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
                 let _ = sender_bot.send(InternalMessage::Close);
                 break;
             }
-            _ => InternalMessage::Proxy(trimmed.to_string()),
+            _ => InternalMessage::CrawlOutput(trimmed.to_string()),
         };
 
         match sender_bot.send(message) {

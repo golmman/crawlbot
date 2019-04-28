@@ -37,20 +37,8 @@ fn init_websocket(crawl_server_location: &str) -> (Reader<TcpStream>, Writer<Tcp
     (ws_reader, ws_writer)
 }
 
-fn setup_async_loops() {}
-
 fn main() {
     let (ws_reader, ws_writer) = init_websocket(CRAWL_SERVER_LOCATION);
-
-    // let (sender_stdin_loop_wssend, receiver_loop_wssend) = channel();
-    // let sender_wsrecv_loop_wssend = sender_stdin_loop_wssend.clone();
-    // let sender_bot_loop_wssend = sender_stdin_loop_wssend.clone();
-
-    // let (sender_stdin_loop_bot, receiver_loop_bot) = channel();
-
-    // let loop_wssend = thread::spawn(move || run_loop_wssend(ws_writer, receiver_loop_wssend));
-    // let loop_wsrecv = thread::spawn(move || run_loop_wsrecv(ws_reader, sender_wsrecv_loop_wssend));
-    // let loop_bot = thread::spawn(move || run_loop_bot(receiver_loop_bot, receiver_loop_bot, sender_bot_loop_wssend));
 
     let (send_wsrecv, recv_wsrecv) = channel();
     let (send_stdin, recv_stdin) = channel();

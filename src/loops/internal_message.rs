@@ -2,8 +2,6 @@ use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt::Result;
 
-use super::super::model::CrawlMessage;
-
 #[derive(Clone, Debug)]
 pub enum InternalMessage {
     Close,
@@ -16,8 +14,8 @@ pub enum InternalMessage {
 
     Idle,
 
-    Proxy(String),
-    CrawlData(CrawlMessage),
+    CrawlInput(String),
+    CrawlOutput(String),
 }
 
 impl Display for InternalMessage {

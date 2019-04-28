@@ -1,3 +1,3 @@
 #!/bin/sh
 
-cargo test
+cargo test "$1" -- --nocapture

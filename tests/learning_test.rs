@@ -128,6 +128,11 @@ fn json_deserialize3() {
     println!("Please call {} at the number {}", v["name"], v["phones"][0]);
     println!("dasdasd {}", v["subobject"]["aaa"]);
     println!("dasdasd {}", v["subobject"]["hjjj"]);
+
+    let v2: &Value = &v["phones"];
+    for s in v2.as_array().unwrap() {
+        println!("{}", s);
+    }
 }
 
 // #[derive(Debug)]
@@ -136,11 +141,8 @@ fn json_deserialize3() {
 // }
 
 #[test]
-fn emptying_queue() {
-    let mut queue1: VecDeque<_> = vec![1, 2].into_iter().collect();
-    let queue2: VecDeque<_> = vec![3, 4].into_iter().collect();
-    let queue3 = vec![3, 4];
-    let queue4 = &[3, 4];
-    
-    // println!("{:?}", TestEnum::Test1);
+fn fmt() {
+    println!("{:.5} TEST", "HelloWorld");
+    println!("{:5.5} TEST", "HelloWorld");
+    println!("{:5.5} TEST", "HW");
 }

@@ -24,6 +24,7 @@ cd crawl-ref/source/ && python webserver/server.py
 {"msg":"key","keycode":19} // save and exit
 {"msg": "input", "text": "o"} // explore
 
+{"msg": "ping"}
 {"msg": "pong"}
 ```
 
@@ -51,6 +52,7 @@ https://ticki.github.io/blog/making-terminal-applications-in-rust-with-termion/
 
 
 /crawl-ref/settings/old_unicode_glyphs.txt
+/crawl-ref/source/defines.h
 
 * DCHAR_WALL: #
 * DCHAR_PERMAWALL: ▓

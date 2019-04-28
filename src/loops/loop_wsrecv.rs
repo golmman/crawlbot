@@ -6,15 +6,13 @@ use std::sync::mpsc::Sender;
 use std::fs::File;
 use std::io::prelude::*;
 
-use serde_json;
+use serde_json::Value;
 
 use websocket::receiver::Reader;
 use websocket::OwnedMessage;
 
 use super::super::*;
 use super::internal_message::InternalMessage;
-
-use super::super::model::CrawlBatch;
 
 pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<InternalMessage>) {
     let mut debug_counter = 0;
@@ -43,29 +41,26 @@ pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<Internal
                 }
             },
             OwnedMessage::Text(data) => {
-                let crawl_batch: CrawlBatch = serde_json::from_str(data.as_str()).unwrap();
+                let crawl_input: Value = serde_json::from_str(data.as_str()).unwrap();
+                let crawl_msgs: &Value = &crawl_input["msgs"];
 
                 if data.len() < 10000 {
                     log_info!("Text {:?}", data);
                 } else {
-                    log_warn!("Text was too long! {:?}", crawl_batch);
+                    log_warn!("Text was too long! {:?}", crawl_input);
                     let filename = format!("debug{}.json", debug_counter);
                     let mut file = File::create(filename).unwrap();
                     let _ = file.write_all(data.as_bytes());
                     debug_counter += 1;
                 }
 
-                
-                for crawl_message in crawl_batch.msgs.into_iter() {
-                    let _ = sender.send(InternalMessage::CrawlData(crawl_message));
+                for crawl_msg in crawl_msgs.as_array().unwrap() {
+                    let _ = sender.send(InternalMessage::CrawlInput(crawl_msg.to_string()));
                 }
-
-                // let _ = sender.send(InternalMessage::CrawlData(crawl_batch));
-            },
-            // Say what we received
-            _ => log_debug!("loop_wsrecv message {:?}", message),
+            }
+            _ => { log_warn!("Unknown message."); }
         }
     }
 
-    log_info!("Exiting loop_wsrecv...");
+    log_debug!("Exiting loop_wsrecv...");
 }

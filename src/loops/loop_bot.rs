@@ -4,10 +4,10 @@ use std::collections::VecDeque;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 
+use serde_json::Value;
+
 use super::super::*;
 use super::internal_message::InternalMessage;
-
-use super::super::model::CrawlMessage;
 
 use super::super::routines::push_routine;
 use super::super::routines::NOTHING5;
@@ -21,13 +21,9 @@ pub fn run_loop_bot(
     let mut message_queue: VecDeque<InternalMessage> = VecDeque::new();
     let mut routine_queue: VecDeque<InternalMessage> = VecDeque::new();
 
-
     loop {
         std::thread::sleep(std::time::Duration::from_millis(100));
 
-
-
-        // TODO websocket messages?
         let message_stdin = receiver_stdin
             .try_recv()
             .unwrap_or(InternalMessage::Nothing);
@@ -44,8 +40,9 @@ pub fn run_loop_bot(
         }
 
         if !pause {
-            log_debug!("test");
-            if !routine_queue.is_empty() {
+            if routine_queue.is_empty() {
+                log_debug!("Routine queue is empty!");
+            } else {
                 let routine_message = routine_queue.pop_front().unwrap();
                 log_debug!("Popping from routine queue: {:?}", routine_message);
                 message_queue.push_back(routine_message);
@@ -56,17 +53,19 @@ pub fn run_loop_bot(
             .pop_front()
             .unwrap_or(InternalMessage::Nothing);
 
+        if message.is_something() {
+            let m = format!("{:?}", message);
+            log_debug!("Processing {:80.80} ... {} total chars", m, m.len());
+        }
+
         match message {
             InternalMessage::Pause => {
-                log_debug!("Message: Pause");
                 pause = true;
             }
             InternalMessage::Unpause => {
-                log_debug!("Message: Unpause");
                 pause = false;
             }
             InternalMessage::Idle => {
-                log_debug!("Message: Idle");
                 push_routine(&mut routine_queue, NOTHING5);
             }
             InternalMessage::GetStatus => {
@@ -76,34 +75,35 @@ pub fn run_loop_bot(
                 log_debug!("`--------------");
             }
             InternalMessage::Close => {
-                log_debug!("Message Close");
                 let _ = sender_websocket.send(InternalMessage::Close);
                 break;
             }
             InternalMessage::Ping(data) => {
-                log_debug!("Message Ping");
                 let _ = sender_websocket.send(InternalMessage::Pong(data));
             }
-            InternalMessage::Proxy(data) => {
-                log_debug!("Message Proxy: {}", data);
-                let _ = sender_websocket.send(InternalMessage::Proxy(data));
+            InternalMessage::CrawlOutput(data) => {
+                let _ = sender_websocket.send(InternalMessage::CrawlOutput(data));
             }
-            InternalMessage::CrawlData(crawl_message) => {
-                log_debug!("Message CrawlData: {:?}", crawl_message);
+            InternalMessage::CrawlInput(crawl_message) => {
+                let crawl_input: Value = serde_json::from_str(crawl_message.as_str()).unwrap();
+                let crawl_msg = &crawl_input["msg"];
 
-                match crawl_message.msg.as_str() {
+                match crawl_msg.as_str().unwrap() {
                     "ping" => {
-                        sender_websocket.send(InternalMessage::CrawlData(CrawlMessage { msg: "pong".to_string() }));
+                        let _ = sender_websocket.send(InternalMessage::CrawlOutput(
+                            "{\"msg\":\"pong\"}".to_string(),
+                        ));
                     }
+                    "test" => {}
                     _ => {}
                 }
             }
             InternalMessage::Nothing => {}
             _ => {
-                log_debug!("loop_bot message unknown: {}", message);
+                log_warn!("Unknown message.");
             }
         };
     }
 
-    log_info!("Exiting loop_bot...");
+    log_debug!("Exiting loop_bot...");
 }
