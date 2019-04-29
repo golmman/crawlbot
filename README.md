@@ -22,6 +22,8 @@ cd crawl-ref/source/ && python webserver/server.py
 {"msg":"key","keycode":-253} // down
 {"msg":"key","keycode":11} // return
 {"msg":"key","keycode":9} // auto-attack
+{"msg":"key","keycode":16} // show history
+{"msg":"key","keycode":17} // abandon
 {"msg":"key","keycode":19} // save and exit
 {"msg": "input","text": "o"} // explore
 
@@ -29,6 +31,11 @@ cd crawl-ref/source/ && python webserver/server.py
 {"msg": "input","text": "b"}
 {"msg": "input","text": "a"}
 {"msg": "input","text": "c"}
+
+// PICK TROLL BERSERKER CLAWS
+{"msg": "input","text": "g"}
+{"msg": "input","text": "h"}
+{"msg": "input","text": "f"}
 
 // ABANDON
 {"msg":"key","keycode":17}
@@ -50,7 +57,8 @@ Keycodes
 * esc 27
 * ctrl-a 1 ?? (b=2, c=3, ...)
 * ctrl-o 15
-* ctrl-q 17 ??
+* ctrl-p 16
+* ctrl-q 17
 * ctrl-s 19
 * tab 9
 

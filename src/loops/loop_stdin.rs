@@ -26,7 +26,6 @@ fn print_help() {
 }
 
 pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
-    
     print_help();
 
     loop {
@@ -38,7 +37,12 @@ pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
 
         let message = match trimmed {
             "" => InternalMessage::Pause,
-            "/u" => InternalMessage::Unpause,
+            "/abandon" => InternalMessage::Abandon,
+            "/clear_routines" => InternalMessage::ClearRoutines,
+            "/close" | "/c" => {
+                let _ = sender_bot.send(InternalMessage::Close);
+                break;
+            }
             "/get_status" => InternalMessage::GetStatus,
             "/idle5" => InternalMessage::Idle5,
             "/idle10" => InternalMessage::Idle10,
@@ -46,11 +50,10 @@ pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
                 print_help();
                 InternalMessage::Nothing
             }
+            "/pick_mifi" => InternalMessage::PickMiFi,
+            "/pick_trbe" => InternalMessage::PickTrBe,
             "/start" => InternalMessage::Start,
-            "/close" | "/c" => {
-                let _ = sender_bot.send(InternalMessage::Close);
-                break;
-            }
+            "/u" => InternalMessage::Unpause,
             _ => InternalMessage::CrawlOutput(trimmed.to_string()),
         };
 

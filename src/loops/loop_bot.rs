@@ -9,10 +9,7 @@ use serde_json::Value;
 use super::super::*;
 use super::internal_message::InternalMessage;
 
-use super::super::routines::create_routine_idle5;
-use super::super::routines::create_routine_idle10;
-use super::super::routines::create_routine_start;
-use super::super::routines::push_routine;
+use super::super::routines::*;
 
 use super::super::model::GameState;
 
@@ -65,6 +62,13 @@ pub fn run_loop_bot(
         }
 
         match message {
+            InternalMessage::ClearRoutines => {
+                routine_queue.clear();
+            }
+            InternalMessage::Close => {
+                let _ = sender_websocket.send(InternalMessage::Close);
+                break;
+            }
             InternalMessage::Pause => {
                 pause = true;
                 game_state.set_paused(true);
@@ -72,11 +76,20 @@ pub fn run_loop_bot(
             InternalMessage::Unpause => {
                 pause = false;
             }
-            InternalMessage::Idle5 => {
-                push_routine(&mut routine_queue, create_routine_idle5);
+            InternalMessage::Abandon => {
+                push_routine(&mut routine_queue, create_routine_abandon);
             }
             InternalMessage::Idle10 => {
                 push_routine(&mut routine_queue, create_routine_idle10);
+            }
+            InternalMessage::Idle5 => {
+                push_routine(&mut routine_queue, create_routine_idle5);
+            }
+            InternalMessage::PickMiFi => {
+                push_routine(&mut routine_queue, create_routine_pick_mifi);
+            }
+            InternalMessage::PickTrBe => {
+                push_routine(&mut routine_queue, create_routine_pick_trbe);
             }
             InternalMessage::Start => {
                 push_routine(&mut routine_queue, create_routine_start);
@@ -87,10 +100,7 @@ pub fn run_loop_bot(
                 log_debug!("| routine_queue.len: {:?}", routine_queue.len());
                 log_debug!("`--------------");
             }
-            InternalMessage::Close => {
-                let _ = sender_websocket.send(InternalMessage::Close);
-                break;
-            }
+
             InternalMessage::Ping(data) => {
                 let _ = sender_websocket.send(InternalMessage::Pong(data));
             }

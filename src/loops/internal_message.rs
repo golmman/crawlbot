@@ -4,6 +4,7 @@ use std::fmt::Result;
 
 #[derive(Clone, Debug)]
 pub enum InternalMessage {
+    ClearRoutines,
     Close,
     GetStatus,
     Nothing,
@@ -12,8 +13,12 @@ pub enum InternalMessage {
     Pong(Vec<u8>),
     Unpause,
 
-    Idle5,
+
+    Abandon,
     Idle10,
+    Idle5,
+    PickMiFi,
+    PickTrBe,
     Start,
 
     CrawlInput(String),
