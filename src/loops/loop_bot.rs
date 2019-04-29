@@ -72,6 +72,20 @@ pub fn run_loop_bot(
             InternalMessage::Pause => {
                 pause = true;
                 game_state.set_paused(true);
+
+                let f: fn(GameState) -> bool = |g| g.get_paused();
+                // let g: fn() -> bool = || game_state.get_paused();
+
+                f(game_state);
+
+                InternalMessage::IfThenElse(GameState::get_paused, create_routine_abandon, create_routine_abandon);
+            }
+            InternalMessage::IfThenElse(check, then_routine, else_routine) => {
+                if check(game_state) {
+                    push_routine(&mut routine_queue, then_routine);
+                } else {
+                    push_routine(&mut routine_queue, else_routine);
+                }
             }
             InternalMessage::Unpause => {
                 pause = false;

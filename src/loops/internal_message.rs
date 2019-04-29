@@ -2,27 +2,34 @@ use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt::Result;
 
+use super::super::model::GameState;
+
+pub type Routine = Vec<InternalMessage>;
+
 #[derive(Clone, Debug)]
 pub enum InternalMessage {
+    // basic messages
     ClearRoutines,
     Close,
     GetStatus,
     Nothing,
     Pause,
-    Ping(Vec<u8>),
-    Pong(Vec<u8>),
     Unpause,
 
-
+    // combined messages (routines)
     Abandon,
     Idle10,
     Idle5,
     PickMiFi,
     PickTrBe,
     Start,
+    IfThenElse(fn(GameState) -> bool, fn() -> Routine, fn() -> Routine),
 
+    // control messages
     CrawlInput(String),
     CrawlOutput(String),
+    Ping(Vec<u8>),
+    Pong(Vec<u8>),
 }
 
 impl Display for InternalMessage {
