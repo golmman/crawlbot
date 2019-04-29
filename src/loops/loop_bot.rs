@@ -7,31 +7,29 @@ use std::sync::mpsc::Sender;
 use serde_json::Value;
 
 use super::super::*;
-use super::internal_message::InternalMessage;
+use super::internal_message::Instruction;
 
 use super::super::routines::*;
 
 use super::super::model::GameState;
 
 pub fn run_loop_bot(
-    receiver_stdin: Receiver<InternalMessage>,
-    receiver_websocket: Receiver<InternalMessage>,
-    sender_websocket: Sender<InternalMessage>,
+    receiver_stdin: Receiver<Instruction>,
+    receiver_websocket: Receiver<Instruction>,
+    sender_websocket: Sender<Instruction>,
 ) {
     let mut pause = true;
     let mut game_state = GameState::new();
-    let mut message_queue: VecDeque<InternalMessage> = VecDeque::new();
-    let mut routine_queue: VecDeque<InternalMessage> = VecDeque::new();
+    let mut message_queue: VecDeque<Instruction> = VecDeque::new();
+    let mut routine_queue: VecDeque<Instruction> = VecDeque::new();
 
     loop {
         std::thread::sleep(std::time::Duration::from_millis(100));
 
-        let message_stdin = receiver_stdin
-            .try_recv()
-            .unwrap_or(InternalMessage::Nothing);
+        let message_stdin = receiver_stdin.try_recv().unwrap_or(Instruction::Nothing);
         let message_websocket = receiver_websocket
             .try_recv()
-            .unwrap_or(InternalMessage::Nothing);
+            .unwrap_or(Instruction::Nothing);
 
         if message_stdin.is_something() {
             message_queue.push_back(message_stdin);
@@ -44,7 +42,7 @@ pub fn run_loop_bot(
         if !pause {
             if routine_queue.is_empty() {
                 log_debug!("Routine queue is empty, pausing now!");
-                message_queue.push_back(InternalMessage::Pause);
+                message_queue.push_back(Instruction::Pause);
             } else {
                 let routine_message = routine_queue.pop_front().unwrap();
                 log_debug!("Popping from routine queue: {:?}", routine_message);
@@ -52,9 +50,7 @@ pub fn run_loop_bot(
             }
         }
 
-        let message = message_queue
-            .pop_front()
-            .unwrap_or(InternalMessage::Nothing);
+        let message = message_queue.pop_front().unwrap_or(Instruction::Nothing);
 
         if message.is_something() {
             let m = format!("{:?}", message);
@@ -62,14 +58,14 @@ pub fn run_loop_bot(
         }
 
         match message {
-            InternalMessage::ClearRoutines => {
+            Instruction::ClearRoutines => {
                 routine_queue.clear();
             }
-            InternalMessage::Close => {
-                let _ = sender_websocket.send(InternalMessage::Close);
+            Instruction::Close => {
+                let _ = sender_websocket.send(Instruction::Close);
                 break;
             }
-            InternalMessage::Pause => {
+            Instruction::Pause => {
                 pause = true;
                 game_state.set_paused(true);
 
@@ -78,64 +74,67 @@ pub fn run_loop_bot(
 
                 f(game_state);
 
-                InternalMessage::IfThenElse(GameState::get_paused, create_routine_abandon, create_routine_abandon);
+                Instruction::IfThenElse(
+                    GameState::get_paused,
+                    create_routine_abandon,
+                    create_routine_abandon,
+                );
             }
-            InternalMessage::IfThenElse(check, then_routine, else_routine) => {
+            Instruction::IfThenElse(check, then_routine, else_routine) => {
                 if check(game_state) {
                     push_routine(&mut routine_queue, then_routine);
                 } else {
                     push_routine(&mut routine_queue, else_routine);
                 }
             }
-            InternalMessage::Unpause => {
+            Instruction::Unpause => {
                 pause = false;
             }
-            InternalMessage::Abandon => {
+            Instruction::Abandon => {
                 push_routine(&mut routine_queue, create_routine_abandon);
             }
-            InternalMessage::Idle10 => {
+            Instruction::Idle10 => {
                 push_routine(&mut routine_queue, create_routine_idle10);
             }
-            InternalMessage::Idle5 => {
+            Instruction::Idle5 => {
                 push_routine(&mut routine_queue, create_routine_idle5);
             }
-            InternalMessage::PickMiFi => {
+            Instruction::PickMiFi => {
                 push_routine(&mut routine_queue, create_routine_pick_mifi);
             }
-            InternalMessage::PickTrBe => {
+            Instruction::PickTrBe => {
                 push_routine(&mut routine_queue, create_routine_pick_trbe);
             }
-            InternalMessage::Start => {
+            Instruction::Start => {
                 push_routine(&mut routine_queue, create_routine_start);
             }
-            InternalMessage::GetStatus => {
+            Instruction::GetStatus => {
                 log_debug!(",--- STATUS ---");
                 log_debug!("| message_queue.len: {:?}", message_queue.len());
                 log_debug!("| routine_queue.len: {:?}", routine_queue.len());
                 log_debug!("`--------------");
             }
 
-            InternalMessage::Ping(data) => {
-                let _ = sender_websocket.send(InternalMessage::Pong(data));
+            Instruction::Ping(data) => {
+                let _ = sender_websocket.send(Instruction::Pong(data));
             }
-            InternalMessage::CrawlOutput(data) => {
-                let _ = sender_websocket.send(InternalMessage::CrawlOutput(data));
+            Instruction::CrawlOutput(data) => {
+                let _ = sender_websocket.send(Instruction::CrawlOutput(data));
             }
-            InternalMessage::CrawlInput(crawl_message) => {
+            Instruction::CrawlInput(crawl_message) => {
                 let crawl_input: Value = serde_json::from_str(crawl_message.as_str()).unwrap();
                 let crawl_msg = &crawl_input["msg"];
 
                 match crawl_msg.as_str().unwrap() {
                     "ping" => {
-                        let _ = sender_websocket.send(InternalMessage::CrawlOutput(
-                            "{\"msg\":\"pong\"}".to_string(),
-                        ));
+                        let _ = sender_websocket
+                            .send(Instruction::CrawlOutput("{\"msg\":\"pong\"}".to_string()));
                     }
                     "test" => {}
                     _ => {}
                 }
             }
-            InternalMessage::Nothing => {}
+            Instruction::Nothing => {}
             _ => {
                 log_warn!("Unknown message.");
             }

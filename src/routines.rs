@@ -1,17 +1,19 @@
-use crate::loops::internal_message::InternalMessage;
+use crate::loops::internal_message::Instruction;
 use crate::loops::internal_message::Routine;
 use std::collections::VecDeque;
 
 use crate::model::GameState;
 
-fn cr_out(s: &str) -> InternalMessage {
-    InternalMessage::CrawlOutput(String::from(s))
+fn cr_out(s: &str) -> Instruction {
+    Instruction::CrawlOutput(String::from(s))
 }
 
 pub fn create_routine_ifthenelse_test() -> Routine {
-    vec![
-        InternalMessage::IfThenElse(GameState::get_paused, create_routine_idle5, create_routine_idle5),
-    ]
+    vec![Instruction::IfThenElse(
+        GameState::get_paused,
+        create_routine_idle5,
+        create_routine_idle5,
+    )]
 }
 
 pub fn create_routine_abandon() -> Routine {
@@ -26,16 +28,16 @@ pub fn create_routine_abandon() -> Routine {
 
 pub fn create_routine_idle5() -> Routine {
     vec![
-        InternalMessage::Nothing,
-        InternalMessage::Nothing,
-        InternalMessage::Nothing,
-        InternalMessage::Nothing,
-        InternalMessage::Nothing,
+        Instruction::Nothing,
+        Instruction::Nothing,
+        Instruction::Nothing,
+        Instruction::Nothing,
+        Instruction::Nothing,
     ]
 }
 
 pub fn create_routine_idle10() -> Routine {
-    vec![InternalMessage::Idle5, InternalMessage::Idle5]
+    vec![Instruction::Idle5, Instruction::Idle5]
 }
 
 pub fn create_routine_pick_mifi() -> Routine {
@@ -57,17 +59,17 @@ pub fn create_routine_pick_trbe() -> Routine {
 pub fn create_routine_start() -> Routine {
     vec![
         cr_out(r#"{"msg":"login","username":"crawlbot","password":"123"}"#),
-        InternalMessage::Nothing,
-        InternalMessage::Nothing,
-        InternalMessage::Nothing,
-        InternalMessage::Nothing,
-        InternalMessage::Nothing,
+        Instruction::Nothing,
+        Instruction::Nothing,
+        Instruction::Nothing,
+        Instruction::Nothing,
+        Instruction::Nothing,
         cr_out(r#"{"msg":"play","game_id":"dcss-web-trunk"}"#),
-        InternalMessage::Pause,
+        Instruction::Pause,
     ]
 }
 
-pub fn push_routine(queue: &mut VecDeque<InternalMessage>, routine: fn() -> Routine) {
+pub fn push_routine(queue: &mut VecDeque<Instruction>, routine: fn() -> Routine) {
     let rou = routine();
     for r in rou {
         queue.push_back(r.clone());

@@ -12,9 +12,9 @@ use websocket::receiver::Reader;
 use websocket::OwnedMessage;
 
 use super::super::*;
-use super::internal_message::InternalMessage;
+use super::internal_message::Instruction;
 
-pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<InternalMessage>) {
+pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<Instruction>) {
     let mut debug_counter = 0;
 
     // Receive loop
@@ -23,17 +23,17 @@ pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<Internal
             Ok(m) => m,
             Err(e) => {
                 log_error!("An error occured while reading a ws message: {:?}", e);
-                let _ = sender.send(InternalMessage::Close);
+                let _ = sender.send(Instruction::Close);
                 break;
             }
         };
 
         match message {
             OwnedMessage::Close(_) => {
-                let _ = sender.send(InternalMessage::Close);
+                let _ = sender.send(Instruction::Close);
                 break;
             }
-            OwnedMessage::Ping(data) => match sender.send(InternalMessage::Ping(data)) {
+            OwnedMessage::Ping(data) => match sender.send(Instruction::Ping(data)) {
                 Ok(()) => (),
                 Err(e) => {
                     log_error!("An error occured while sending a pong response: {:?}", e);
@@ -44,7 +44,10 @@ pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<Internal
                 if data.len() < 10000 {
                     log_info!("Text {:?}", data);
                 } else {
-                    log_warn!("Text was too long! -> stored in debug{}.json", debug_counter);
+                    log_warn!(
+                        "Text was too long! -> stored in debug{}.json",
+                        debug_counter
+                    );
                     let filename = format!("debug{}.json", debug_counter);
                     let mut file = File::create(filename).unwrap();
                     let _ = file.write_all(data.as_bytes());
@@ -55,10 +58,12 @@ pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<Internal
                 let crawl_msgs: &Value = &crawl_input["msgs"];
 
                 for crawl_msg in crawl_msgs.as_array().unwrap() {
-                    let _ = sender.send(InternalMessage::CrawlInput(crawl_msg.to_string()));
+                    let _ = sender.send(Instruction::CrawlInput(crawl_msg.to_string()));
                 }
             }
-            _ => { log_warn!("Unknown message."); }
+            _ => {
+                log_warn!("Unknown message.");
+            }
         }
     }
 

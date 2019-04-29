@@ -4,11 +4,11 @@ use std::fmt::Result;
 
 use super::super::model::GameState;
 
-pub type Routine = Vec<InternalMessage>;
+pub type Routine = Vec<Instruction>;
 
 #[derive(Clone, Debug)]
-pub enum InternalMessage {
-    // basic messages
+pub enum Instruction {
+    // single instructions
     ClearRoutines,
     Close,
     GetStatus,
@@ -16,7 +16,7 @@ pub enum InternalMessage {
     Pause,
     Unpause,
 
-    // combined messages (routines)
+    // sequential instructions, which construct routines
     Abandon,
     Idle10,
     Idle5,
@@ -24,24 +24,24 @@ pub enum InternalMessage {
     PickTrBe,
     Start,
     IfThenElse(fn(GameState) -> bool, fn() -> Routine, fn() -> Routine),
-
-    // control messages
+    
+    // control instructions
     CrawlInput(String),
     CrawlOutput(String),
     Ping(Vec<u8>),
     Pong(Vec<u8>),
 }
 
-impl Display for InternalMessage {
+impl Display for Instruction {
     fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "InternalMessage")
+        write!(f, "Instruction")
     }
 }
 
-impl InternalMessage {
+impl Instruction {
     pub fn is_something(&self) -> bool {
         match *self {
-            InternalMessage::Nothing => false,
+            Instruction::Nothing => false,
             _ => true,
         }
     }

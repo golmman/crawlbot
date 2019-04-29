@@ -7,9 +7,9 @@ use websocket::sender::Writer;
 use websocket::Message;
 
 use super::super::*;
-use super::internal_message::InternalMessage;
+use super::internal_message::Instruction;
 
-pub fn run_loop_wssend(mut ws_writer: Writer<TcpStream>, receiver: Receiver<InternalMessage>) {
+pub fn run_loop_wssend(mut ws_writer: Writer<TcpStream>, receiver: Receiver<Instruction>) {
     loop {
         let message = match receiver.recv() {
             Ok(m) => m,
@@ -22,20 +22,22 @@ pub fn run_loop_wssend(mut ws_writer: Writer<TcpStream>, receiver: Receiver<Inte
         log_debug!("Processing {:?}", message);
 
         match message {
-            InternalMessage::Close => {
+            Instruction::Close => {
                 let _ = ws_writer.send_message(&Message::close());
                 break;
             }
-            InternalMessage::Pong(data) => {
+            Instruction::Pong(data) => {
                 let _ = ws_writer.send_message(&Message::pong(data));
             }
-            InternalMessage::CrawlOutput(data) => {
+            Instruction::CrawlOutput(data) => {
                 let _ = ws_writer.send_message(&Message::text(data));
             }
-            InternalMessage::CrawlInput(crawl_message) => {
+            Instruction::CrawlInput(crawl_message) => {
                 log_warn!("CrawlInput {:?}", crawl_message);
             }
-            _ => { log_warn!("Unknown message."); }
+            _ => {
+                log_warn!("Unknown message.");
+            }
         }
     }
 

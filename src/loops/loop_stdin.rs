@@ -3,7 +3,7 @@ extern crate websocket;
 use std::sync::mpsc::Sender;
 
 use super::super::*;
-use super::internal_message::InternalMessage;
+use super::internal_message::Instruction;
 
 fn print_help() {
     println!("-------------------------------------------------------------------------------");
@@ -25,7 +25,7 @@ fn print_help() {
     println!("-------------------------------------------------------------------------------");
 }
 
-pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
+pub fn run_loop_stdin(sender_bot: Sender<Instruction>) {
     print_help();
 
     loop {
@@ -36,25 +36,25 @@ pub fn run_loop_stdin(sender_bot: Sender<InternalMessage>) {
         let trimmed = input.trim();
 
         let message = match trimmed {
-            "" => InternalMessage::Pause,
-            "/abandon" => InternalMessage::Abandon,
-            "/clear_routines" => InternalMessage::ClearRoutines,
+            "" => Instruction::Pause,
+            "/abandon" => Instruction::Abandon,
+            "/clear_routines" => Instruction::ClearRoutines,
             "/close" | "/c" => {
-                let _ = sender_bot.send(InternalMessage::Close);
+                let _ = sender_bot.send(Instruction::Close);
                 break;
             }
-            "/get_status" => InternalMessage::GetStatus,
-            "/idle5" => InternalMessage::Idle5,
-            "/idle10" => InternalMessage::Idle10,
+            "/get_status" => Instruction::GetStatus,
+            "/idle5" => Instruction::Idle5,
+            "/idle10" => Instruction::Idle10,
             "/help" => {
                 print_help();
-                InternalMessage::Nothing
+                Instruction::Nothing
             }
-            "/pick_mifi" => InternalMessage::PickMiFi,
-            "/pick_trbe" => InternalMessage::PickTrBe,
-            "/start" => InternalMessage::Start,
-            "/u" => InternalMessage::Unpause,
-            _ => InternalMessage::CrawlOutput(trimmed.to_string()),
+            "/pick_mifi" => Instruction::PickMiFi,
+            "/pick_trbe" => Instruction::PickTrBe,
+            "/start" => Instruction::Start,
+            "/u" => Instruction::Unpause,
+            _ => Instruction::CrawlOutput(trimmed.to_string()),
         };
 
         match sender_bot.send(message) {
