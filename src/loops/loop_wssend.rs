@@ -1,13 +1,11 @@
 extern crate websocket;
 
-use std::net::TcpStream;
-use std::sync::mpsc::Receiver;
-
-use websocket::sender::Writer;
-use websocket::Message;
-
 use super::super::*;
 use super::internal_message::Instruction;
+use std::net::TcpStream;
+use std::sync::mpsc::Receiver;
+use websocket::sender::Writer;
+use websocket::Message;
 
 pub fn run_loop_wssend(mut ws_writer: Writer<TcpStream>, receiver: Receiver<Instruction>) {
     loop {

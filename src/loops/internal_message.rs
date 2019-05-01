@@ -20,6 +20,7 @@ pub enum Instruction {
     Abandon,
     Idle10,
     Idle5,
+    Main,
     PickMiFi,
     PickTrBe,
     Start,

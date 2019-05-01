@@ -1,9 +1,8 @@
 extern crate websocket;
 
-use std::sync::mpsc::Sender;
-
 use super::super::*;
 use super::internal_message::Instruction;
+use std::sync::mpsc::Sender;
 
 fn print_help() {
     println!("-------------------------------------------------------------------------------");
@@ -12,14 +11,18 @@ fn print_help() {
     println!("CRAWLBOT");
     println!();
     println!("commands:");
-    println!("/close          sends a close message to crawl, exits crawlbot");
-    println!("/get_status     prints a status report");
-    println!("/idle5          lets crawlbot idle for 5 tics");
-    println!("/idle10         lets crawlbot idle for 10 tics");
-    println!("/help           prints this help screen");
-    println!("/start          starts a the game");
-    println!("/u              un-pauses crawlbot");
-    println!("<return key>    pauses crawlbot");
+    println!("/abandon              abandons the current game");
+    println!("/clear_routines       clears the routine queue");
+    println!("/c or /close          sends a close message to crawl, exits crawlbot");
+    println!("/s or /get_status     prints a status report");
+    println!("/idle5                lets crawlbot idle for 5 tics");
+    println!("/idle10               lets crawlbot idle for 10 tics");
+    println!("/help                 prints this help screen");
+    println!("/pick_mifi            when a new game was started: pick mifi");
+    println!("/pick_trbe            when a new game was started: pick trbe");
+    println!("/start                starts a the game");
+    println!("/u or /unpause        un-pauses crawlbot");
+    println!("<return key>          pauses crawlbot");
     println!();
     println!();
     println!("-------------------------------------------------------------------------------");
@@ -39,21 +42,22 @@ pub fn run_loop_stdin(sender_bot: Sender<Instruction>) {
             "" => Instruction::Pause,
             "/abandon" => Instruction::Abandon,
             "/clear_routines" => Instruction::ClearRoutines,
-            "/close" | "/c" => {
+            "/c" | "/close" => {
                 let _ = sender_bot.send(Instruction::Close);
                 break;
             }
-            "/get_status" => Instruction::GetStatus,
+            "/s" | "/get_status" => Instruction::GetStatus,
             "/idle5" => Instruction::Idle5,
             "/idle10" => Instruction::Idle10,
             "/help" => {
                 print_help();
                 Instruction::Nothing
             }
+            "/main" => Instruction::Main,
             "/pick_mifi" => Instruction::PickMiFi,
             "/pick_trbe" => Instruction::PickTrBe,
             "/start" => Instruction::Start,
-            "/u" => Instruction::Unpause,
+            "/u" | "/unpause" => Instruction::Unpause,
             _ => Instruction::CrawlOutput(trimmed.to_string()),
         };
 

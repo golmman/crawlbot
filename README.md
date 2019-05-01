@@ -17,6 +17,10 @@ https://www.graphviz.org/doc/info/shapes.html
 make WEBTILES=y
 cd crawl-ref/source/ && python webserver/server.py
 
+INPUT
+{"msg":"msgs","messages":[{"text":"<lightred>A kobold comes into view.<lightgrey>","turn":1,"channel":33},{"text":"<lightgrey>The kobold shouts!<lightgrey>","turn":1,"channel":9}]}
+
+OUTPUT
 {"msg":"login","username":"crawlbot","password":"123"}
 {"msg":"play","game_id":"dcss-web-trunk"}
 {"msg":"key","keycode":-253} // down
@@ -25,6 +29,8 @@ cd crawl-ref/source/ && python webserver/server.py
 {"msg":"key","keycode":16} // show history
 {"msg":"key","keycode":17} // abandon
 {"msg":"key","keycode":19} // save and exit
+{"msg":"key","keycode":24} // surroundings
+{"msg":"key","keycode":27} // escape
 {"msg": "input","text": "o"} // explore
 
 // PICK MINOTAUR FIGHTER AXE

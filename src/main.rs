@@ -1,10 +1,13 @@
 extern crate websocket;
 
+use loops::loop_bot::run_loop_bot;
+use loops::loop_stdin::run_loop_stdin;
+use loops::loop_wsrecv::run_loop_wsrecv;
+use loops::loop_wssend::run_loop_wssend;
 use std::io::stdin;
 use std::net::TcpStream;
 use std::sync::mpsc::channel;
 use std::thread;
-
 use websocket::client::ClientBuilder;
 use websocket::receiver::Reader;
 use websocket::sender::Writer;
@@ -13,11 +16,6 @@ mod logger;
 mod loops;
 mod model;
 mod routines;
-
-use loops::loop_bot::run_loop_bot;
-use loops::loop_stdin::run_loop_stdin;
-use loops::loop_wsrecv::run_loop_wsrecv;
-use loops::loop_wssend::run_loop_wssend;
 
 const CRAWL_SERVER_LOCATION: &str = "ws://localhost:8080/socket";
 

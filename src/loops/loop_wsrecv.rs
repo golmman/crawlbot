@@ -1,18 +1,14 @@
 extern crate websocket;
 
-use std::net::TcpStream;
-use std::sync::mpsc::Sender;
-
-use std::fs::File;
-use std::io::prelude::*;
-
-use serde_json::Value;
-
-use websocket::receiver::Reader;
-use websocket::OwnedMessage;
-
 use super::super::*;
 use super::internal_message::Instruction;
+use serde_json::Value;
+use std::fs::File;
+use std::io::prelude::*;
+use std::net::TcpStream;
+use std::sync::mpsc::Sender;
+use websocket::receiver::Reader;
+use websocket::OwnedMessage;
 
 pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<Instruction>) {
     let mut debug_counter = 0;
@@ -42,9 +38,9 @@ pub fn run_loop_wsrecv(mut ws_reader: Reader<TcpStream>, sender: Sender<Instruct
             },
             OwnedMessage::Text(data) => {
                 if data.len() < 10000 {
-                    log_info!("Text {:?}", data);
+                    log_debug!("Processing {:?}", data);
                 } else {
-                    log_warn!(
+                    log_debug!(
                         "Text was too long! -> stored in debug{}.json",
                         debug_counter
                     );

@@ -1,19 +1,40 @@
 use crate::loops::internal_message::Instruction;
 use crate::loops::internal_message::Routine;
-use std::collections::VecDeque;
-
 use crate::model::GameState;
+use std::collections::VecDeque;
 
 fn cr_out(s: &str) -> Instruction {
     Instruction::CrawlOutput(String::from(s))
 }
 
-pub fn create_routine_ifthenelse_test() -> Routine {
+pub fn create_routine_main() -> Routine {
     vec![Instruction::IfThenElse(
-        GameState::get_paused,
-        create_routine_idle5,
-        create_routine_idle5,
+        |g| g.get_enemy_number_in_sight() == 0,
+        create_routine_explore,
+        create_routine_fight,
     )]
+}
+
+pub fn create_routine_explore() -> Routine {
+    vec![
+        cr_out(r#"{"msg":"input","text":"o"}"#),
+        Instruction::IfThenElse(
+            |g| g.get_enemy_number_in_sight() == 0,
+            create_routine_explore,
+            create_routine_fight,
+        ),
+    ]
+}
+
+pub fn create_routine_fight() -> Routine {
+    vec![
+        cr_out(r#"{"msg":"key","keycode":9}"#),
+        Instruction::IfThenElse(
+            |g| g.get_enemy_number_in_sight() == 0,
+            create_routine_explore,
+            create_routine_fight,
+        ),
+    ]
 }
 
 pub fn create_routine_abandon() -> Routine {
@@ -73,5 +94,6 @@ pub fn push_routine(queue: &mut VecDeque<Instruction>, routine: fn() -> Routine)
     let rou = routine();
     for r in rou {
         queue.push_back(r.clone());
+        // queue.push_front(r.clone());
     }
 }
