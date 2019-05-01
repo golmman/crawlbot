@@ -1,7 +1,7 @@
 extern crate websocket;
 
 use super::super::*;
-use super::internal_message::Instruction;
+use super::instruction::Instruction;
 use std::sync::mpsc::Sender;
 
 fn print_help() {

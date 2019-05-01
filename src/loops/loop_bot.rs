@@ -4,7 +4,7 @@ use super::super::model::CrawlInputMsgs;
 use super::super::model::GameState;
 use super::super::routines::*;
 use super::super::*;
-use super::internal_message::Instruction;
+use super::instruction::Instruction;
 use serde_json::Value;
 use std::collections::VecDeque;
 use std::sync::mpsc::Receiver;

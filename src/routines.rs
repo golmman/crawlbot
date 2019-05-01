@@ -1,5 +1,5 @@
-use crate::loops::internal_message::Instruction;
-use crate::loops::internal_message::Routine;
+use crate::loops::instruction::Instruction;
+use crate::loops::instruction::Routine;
 use crate::model::GameState;
 use std::collections::VecDeque;
 
