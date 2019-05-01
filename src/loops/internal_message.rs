@@ -25,6 +25,7 @@ pub enum Instruction {
     PickTrBe,
     Start,
     IfThenElse(fn(GameState) -> bool, fn() -> Routine, fn() -> Routine),
+    Script(fn(GameState) -> fn() -> Routine),
     
     // control instructions
     CrawlInput(String),

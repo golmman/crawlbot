@@ -33,6 +33,9 @@ OUTPUT
 {"msg":"key","keycode":27} // escape
 {"msg": "input","text": "o"} // explore
 
+{"msg":"key","keycode":7} // go deeper
+{"msg": "input","text": ">"}
+
 // PICK MINOTAUR FIGHTER AXE
 {"msg": "input","text": "b"}
 {"msg": "input","text": "a"}

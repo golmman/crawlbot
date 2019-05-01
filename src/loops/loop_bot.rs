@@ -35,18 +35,26 @@ pub fn run_loop_bot(
             message_queue.push_front(message_websocket);
         }
 
-        if routine_queue.is_empty() {
-            // log_debug!("Routine queue is empty, pausing now!");
-            game_state.set_paused(true);
-        } else {
-            // log_debug!("Routine queue is not empty, unpausing now!");
-            game_state.set_paused(false);
-        }
-
         if !game_state.is_paused() {
-            let routine_message = routine_queue.pop_front().unwrap();
-            log_debug!("Popping from routine queue: {:?}", routine_message);
-            message_queue.push_back(routine_message);
+            if message_queue.is_empty() {
+                log_debug!(
+                    "message_queue empty, idle_ticks: {}",
+                    game_state.get_idle_ticks()
+                );
+                game_state.inc_idle_ticks();
+                if game_state.get_idle_ticks() > 3 {
+                    log_debug!("message_queue empty, pausing.");
+                    game_state.pause();
+                }
+            } else {
+                game_state.set_idle_ticks(0);
+            }
+
+            if !routine_queue.is_empty() {
+                let routine_message = routine_queue.pop_front().unwrap();
+                log_debug!("Popping from routine queue: {:?}", routine_message);
+                message_queue.push_back(routine_message);
+            }
         }
 
         let message = message_queue.pop_front().unwrap_or(Instruction::Nothing);
@@ -65,10 +73,10 @@ pub fn run_loop_bot(
                 break;
             }
             Instruction::Pause => {
-                game_state.set_paused(true);
+                game_state.pause();
             }
             Instruction::Unpause => {
-                game_state.set_paused(false);
+                game_state.unpause();
             }
             Instruction::IfThenElse(check, then_routine, else_routine) => {
                 if check(game_state) {
@@ -76,6 +84,9 @@ pub fn run_loop_bot(
                 } else {
                     push_routine(&mut routine_queue, else_routine);
                 }
+            }
+            Instruction::Script(evaluate) => {
+                push_routine(&mut routine_queue, evaluate(game_state));
             }
             Instruction::Abandon => {
                 push_routine(&mut routine_queue, create_routine_abandon);
@@ -120,50 +131,7 @@ pub fn run_loop_bot(
                         let _ = sender_websocket
                             .send(Instruction::CrawlOutput("{\"msg\":\"pong\"}".to_string()));
                     }
-                    "msgs" => {
-                        let input: CrawlInputMsgs =
-                            serde_json::from_str(crawl_message.as_str()).unwrap();
-
-                        for message in input.messages {
-                            // if message.text.find("comes into view.").is_some() {
-                            //     game_state.inc_enemy_number_in_sight();
-                            //     log_debug!(
-                            //         "++enemy_number_in_sight: {}",
-                            //         game_state.get_enemy_number_in_sight()
-                            //     );
-                            // }
-                            // if message.text.find("is nearby!").is_some() {
-                            //     game_state.inc_enemy_number_in_sight();
-                            //     log_debug!(
-                            //         "++enemy_number_in_sight: {}",
-                            //         game_state.get_enemy_number_in_sight()
-                            //     );
-                            // }
-                            if message.text.find("<lightred>").is_some() {
-                                game_state.inc_enemy_number_in_sight();
-                                log_debug!(
-                                    "++enemy_number_in_sight: {}",
-                                    game_state.get_enemy_number_in_sight()
-                                );
-                            }
-
-                            if message.text.find("<red>You kill").is_some() {
-                                game_state.dec_enemy_number_in_sight();
-                                log_debug!(
-                                    "--enemy_number_in_sight: {}",
-                                    game_state.get_enemy_number_in_sight()
-                                );
-                            }
-
-                            if message.text.find("No target in view!").is_some() {
-                                game_state.set_enemy_number_in_sight(0);
-                                log_debug!(
-                                    "0 enemy_number_in_sight: {}",
-                                    game_state.get_enemy_number_in_sight()
-                                );
-                            }
-                        }
-                    }
+                    "msgs" => update_game_state_with_msgs(&mut game_state, crawl_message),
                     _ => {}
                 }
             }
@@ -175,4 +143,42 @@ pub fn run_loop_bot(
     }
 
     log_debug!("Exiting loop_bot...");
+}
+
+fn update_game_state_with_msgs(game_state: &mut GameState, crawl_message: String) {
+    let input: CrawlInputMsgs = serde_json::from_str(crawl_message.as_str()).unwrap();
+
+    for message in input.messages {
+        update_game_state_with_msgs_text(game_state, message.text);
+    }
+}
+
+fn update_game_state_with_msgs_text(game_state: &mut GameState, message_text: String) {
+    if message_text.find("Done exploring.").is_some() {
+        game_state.set_explored(true);
+    }
+
+    if message_text.find("<lightred>").is_some() {
+        game_state.inc_enemy_number_in_sight();
+        log_debug!(
+            "++enemy_number_in_sight: {}",
+            game_state.get_enemy_number_in_sight()
+        );
+    }
+
+    if message_text.find("<red>You kill").is_some() {
+        game_state.dec_enemy_number_in_sight();
+        log_debug!(
+            "--enemy_number_in_sight: {}",
+            game_state.get_enemy_number_in_sight()
+        );
+    }
+
+    if message_text.find("No target in view!").is_some() {
+        game_state.set_enemy_number_in_sight(0);
+        log_debug!(
+            "0 enemy_number_in_sight: {}",
+            game_state.get_enemy_number_in_sight()
+        );
+    }
 }
