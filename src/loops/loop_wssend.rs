@@ -1,7 +1,7 @@
 extern crate websocket;
 
+use super::super::model::instruction::Instruction;
 use super::super::*;
-use super::instruction::Instruction;
 use std::net::TcpStream;
 use std::sync::mpsc::Receiver;
 use websocket::sender::Writer;

@@ -1,9 +1,6 @@
-mod crawl_batch;
 mod crawl_input_msgs;
-mod crawl_message;
 mod game_state;
+pub mod instruction;
 
-pub use self::crawl_batch::CrawlBatch;
 pub use self::crawl_input_msgs::CrawlInputMsgs;
-pub use self::crawl_message::CrawlMessage;
 pub use self::game_state::GameState;

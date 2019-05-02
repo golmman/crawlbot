@@ -1,7 +1,7 @@
 extern crate websocket;
 
+use super::super::model::instruction::Instruction;
 use super::super::*;
-use super::instruction::Instruction;
 use serde_json::Value;
 use std::fs::File;
 use std::io::prelude::*;

@@ -1,6 +1,5 @@
-use crate::loops::instruction::Instruction;
-use crate::loops::instruction::Routine;
-use crate::model::GameState;
+use crate::model::instruction::Instruction;
+use crate::model::instruction::Routine;
 use std::collections::VecDeque;
 
 fn cr_out(s: &str) -> Instruction {
