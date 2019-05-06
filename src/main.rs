@@ -1,6 +1,7 @@
 extern crate websocket;
 
-use loops::loop_bot::run_loop_bot;
+use loops::loop_bot::LoopBotState;
+use loops::loop_bot::LoopState;
 use loops::loop_stdin::run_loop_stdin;
 use loops::loop_wsrecv::run_loop_wsrecv;
 use loops::loop_wssend::run_loop_wssend;
@@ -42,9 +43,11 @@ fn main() {
     let (send_stdin, recv_stdin) = channel();
     let (send_bot, recv_bot) = channel();
 
+    let mut loop_bot_state = LoopBotState::new(recv_stdin, recv_wsrecv, send_bot);
+
     let loop_wssend = thread::spawn(move || run_loop_wssend(ws_writer, recv_bot));
     let loop_wsrecv = thread::spawn(move || run_loop_wsrecv(ws_reader, send_wsrecv));
-    let loop_bot = thread::spawn(move || run_loop_bot(recv_stdin, recv_wsrecv, send_bot));
+    let loop_bot = thread::spawn(move || loop_bot_state.start_loop());
 
     run_loop_stdin(send_stdin);
 

@@ -10,54 +10,124 @@ use std::collections::VecDeque;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 
-pub fn run_loop_bot(
+pub trait LoopState<T, E> {
+    fn assess_error(&self, e: E);
+    fn assess_iteration(&self, t: T);
+    fn run_loop(&mut self) -> Result<T, E>;
+
+    fn start_loop(&mut self) {
+        loop {
+            match self.run_loop() {
+                Ok(t) => {
+                    self.assess_iteration(t);
+                }
+                Err(e) => {
+                    self.assess_error(e);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+pub struct LoopBotState {
     receiver_stdin: Receiver<Instruction>,
     receiver_websocket: Receiver<Instruction>,
     sender_websocket: Sender<Instruction>,
-) {
-    let mut game_state = GameState::new();
-    let mut message_queue: VecDeque<Instruction> = VecDeque::new();
-    let mut routine_queue: VecDeque<Instruction> = VecDeque::new();
 
-    loop {
+    game_state: GameState,
+    message_queue: VecDeque<Instruction>,
+    routine_queue: VecDeque<Instruction>,
+}
+
+impl LoopBotState {
+    pub fn new(
+        receiver_stdin: Receiver<Instruction>,
+        receiver_websocket: Receiver<Instruction>,
+        sender_websocket: Sender<Instruction>,
+    ) -> Self {
+        LoopBotState {
+            receiver_stdin,
+            receiver_websocket,
+            sender_websocket,
+
+            game_state: GameState::new(),
+            message_queue: VecDeque::new(),
+            routine_queue: VecDeque::new(),
+        }
+    }
+
+    fn abc(&self) -> i32 {
+        10
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_add() {
+        let (s1, r1) = channel();
+        let (_s2, r2) = channel();
+        let x = LoopBotState::new(r1, r2, s1);
+        x.assess_error(String::from(""));
+        assert_eq!(x.abc(), 10);
+    }
+}
+
+impl LoopState<String, String> for LoopBotState {
+    fn assess_iteration(&self, _t: String) {}
+    fn assess_error(&self, e: String) {
+        log_debug!("{}", e)
+    }
+
+    fn run_loop(&mut self) -> Result<String, String> {
         std::thread::sleep(std::time::Duration::from_millis(100));
 
-        let message_stdin = receiver_stdin.try_recv().unwrap_or(Instruction::Nothing);
-        let message_websocket = receiver_websocket
+        let message_stdin = self
+            .receiver_stdin
+            .try_recv()
+            .unwrap_or(Instruction::Nothing);
+        let message_websocket = self
+            .receiver_websocket
             .try_recv()
             .unwrap_or(Instruction::Nothing);
 
         if message_stdin.is_something() {
-            message_queue.push_front(message_stdin);
+            self.message_queue.push_front(message_stdin);
         }
 
         if message_websocket.is_something() {
-            message_queue.push_front(message_websocket);
+            self.message_queue.push_front(message_websocket);
         }
 
-        if !game_state.is_paused() {
-            if message_queue.is_empty() {
+        if !self.game_state.is_paused() {
+            if self.message_queue.is_empty() {
                 log_debug!(
                     "message_queue empty, idle_ticks: {}",
-                    game_state.get_idle_ticks()
+                    self.game_state.get_idle_ticks()
                 );
-                game_state.inc_idle_ticks();
-                if game_state.get_idle_ticks() > 3 {
+                self.game_state.inc_idle_ticks();
+                if self.game_state.get_idle_ticks() > 3 {
                     log_debug!("message_queue empty, pausing.");
-                    game_state.pause();
+                    self.game_state.pause();
                 }
             } else {
-                game_state.set_idle_ticks(0);
+                self.game_state.set_idle_ticks(0);
             }
 
-            if !routine_queue.is_empty() {
-                let routine_message = routine_queue.pop_front().unwrap();
+            if !self.routine_queue.is_empty() {
+                let routine_message = self.routine_queue.pop_front().unwrap();
                 log_debug!("Popping from routine queue: {:?}", routine_message);
-                message_queue.push_back(routine_message);
+                self.message_queue.push_back(routine_message);
             }
         }
 
-        let message = message_queue.pop_front().unwrap_or(Instruction::Nothing);
+        let message = self
+            .message_queue
+            .pop_front()
+            .unwrap_or(Instruction::Nothing);
 
         if message.is_something() {
             let m = format!("{:?}", message);
@@ -66,61 +136,61 @@ pub fn run_loop_bot(
 
         match message {
             Instruction::ClearRoutines => {
-                routine_queue.clear();
+                self.routine_queue.clear();
             }
             Instruction::Close => {
-                let _ = sender_websocket.send(Instruction::Close);
-                break;
+                let _ = self.sender_websocket.send(Instruction::Close);
+                return Err(String::from("Exiting loop_bot..."));
             }
             Instruction::Pause => {
-                game_state.pause();
+                self.game_state.pause();
             }
             Instruction::Unpause => {
-                game_state.unpause();
+                self.game_state.unpause();
             }
             Instruction::IfThenElse(check, then_routine, else_routine) => {
-                if check(game_state) {
-                    push_routine(&mut routine_queue, then_routine);
+                if check(self.game_state) {
+                    push_routine(&mut self.routine_queue, then_routine);
                 } else {
-                    push_routine(&mut routine_queue, else_routine);
+                    push_routine(&mut self.routine_queue, else_routine);
                 }
             }
             Instruction::Script(evaluate) => {
-                push_routine(&mut routine_queue, evaluate(game_state));
+                push_routine(&mut self.routine_queue, evaluate(self.game_state));
             }
             Instruction::Abandon => {
-                push_routine(&mut routine_queue, create_routine_abandon);
+                push_routine(&mut self.routine_queue, create_routine_abandon);
             }
             Instruction::Idle10 => {
-                push_routine(&mut routine_queue, create_routine_idle10);
+                push_routine(&mut self.routine_queue, create_routine_idle10);
             }
             Instruction::Idle5 => {
-                push_routine(&mut routine_queue, create_routine_idle5);
+                push_routine(&mut self.routine_queue, create_routine_idle5);
             }
             Instruction::Main => {
-                push_routine(&mut routine_queue, create_routine_main);
+                push_routine(&mut self.routine_queue, create_routine_main);
             }
             Instruction::PickMiFi => {
-                push_routine(&mut routine_queue, create_routine_pick_mifi);
+                push_routine(&mut self.routine_queue, create_routine_pick_mifi);
             }
             Instruction::PickTrBe => {
-                push_routine(&mut routine_queue, create_routine_pick_trbe);
+                push_routine(&mut self.routine_queue, create_routine_pick_trbe);
             }
             Instruction::Start => {
-                push_routine(&mut routine_queue, create_routine_start);
+                push_routine(&mut self.routine_queue, create_routine_start);
             }
             Instruction::GetStatus => {
                 log_debug!("--- STATUS ---");
-                println!("routine_queue = {:#?}", routine_queue);
-                println!("game_state = {:#?}", game_state);
+                println!("routine_queue = {:#?}", self.routine_queue);
+                println!("game_state = {:#?}", self.game_state);
                 log_debug!("--------------");
             }
 
             Instruction::Ping(data) => {
-                let _ = sender_websocket.send(Instruction::Pong(data));
+                let _ = self.sender_websocket.send(Instruction::Pong(data));
             }
             Instruction::CrawlOutput(data) => {
-                let _ = sender_websocket.send(Instruction::CrawlOutput(data));
+                let _ = self.sender_websocket.send(Instruction::CrawlOutput(data));
             }
             Instruction::CrawlInput(crawl_message) => {
                 let crawl_input: Value = serde_json::from_str(crawl_message.as_str()).unwrap();
@@ -128,10 +198,11 @@ pub fn run_loop_bot(
 
                 match crawl_msg.as_str().unwrap() {
                     "ping" => {
-                        let _ = sender_websocket
+                        let _ = self
+                            .sender_websocket
                             .send(Instruction::CrawlOutput("{\"msg\":\"pong\"}".to_string()));
                     }
-                    "msgs" => update_game_state_with_msgs(&mut game_state, crawl_message),
+                    "msgs" => update_game_state_with_msgs(&mut self.game_state, crawl_message),
                     _ => {}
                 }
             }
@@ -140,9 +211,9 @@ pub fn run_loop_bot(
                 log_warn!("Unknown message.");
             }
         };
-    }
 
-    log_debug!("Exiting loop_bot...");
+        Ok(String::from(""))
+    }
 }
 
 fn update_game_state_with_msgs(game_state: &mut GameState, crawl_message: String) {
