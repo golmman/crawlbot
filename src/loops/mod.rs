@@ -1,4 +1,4 @@
-pub mod loop_bot;
+pub mod bot_loop;
 pub mod loop_stdin;
 pub mod loop_wsrecv;
 pub mod loop_wssend;

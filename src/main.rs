@@ -1,10 +1,10 @@
 extern crate websocket;
 
-use loops::loop_bot::LoopBotState;
-use loops::loop_bot::LoopState;
+use loops::bot_loop::BotLoopState;
+use loops::loop_wsrecv::ReaderLoopState;
 use loops::loop_stdin::run_loop_stdin;
-use loops::loop_wsrecv::run_loop_wsrecv;
 use loops::loop_wssend::run_loop_wssend;
+use model::LoopState;
 use std::io::stdin;
 use std::net::TcpStream;
 use std::sync::mpsc::channel;
@@ -43,11 +43,14 @@ fn main() {
     let (send_stdin, recv_stdin) = channel();
     let (send_bot, recv_bot) = channel();
 
-    let mut loop_bot_state = LoopBotState::new(recv_stdin, recv_wsrecv, send_bot);
+    let mut bot_loop_state = BotLoopState::new(recv_stdin, recv_wsrecv, send_bot);
+    let mut reader_loop_state = ReaderLoopState::new(ws_reader, send_wsrecv);
 
     let loop_wssend = thread::spawn(move || run_loop_wssend(ws_writer, recv_bot));
-    let loop_wsrecv = thread::spawn(move || run_loop_wsrecv(ws_reader, send_wsrecv));
-    let loop_bot = thread::spawn(move || loop_bot_state.start_loop());
+    // let loop_wsrecv = thread::spawn(move || run_loop_wsrecv(ws_reader, send_wsrecv));
+
+    let loop_wsrecv = thread::spawn(move || reader_loop_state.start_loop());
+    let loop_bot = thread::spawn(move || bot_loop_state.start_loop());
 
     run_loop_stdin(send_stdin);
 

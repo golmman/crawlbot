@@ -10,27 +10,7 @@ use std::collections::VecDeque;
 use std::sync::mpsc::Receiver;
 use std::sync::mpsc::Sender;
 
-pub trait LoopState<T, E> {
-    fn assess_error(&self, e: E);
-    fn assess_iteration(&self, t: T);
-    fn run_loop(&mut self) -> Result<T, E>;
-
-    fn start_loop(&mut self) {
-        loop {
-            match self.run_loop() {
-                Ok(t) => {
-                    self.assess_iteration(t);
-                }
-                Err(e) => {
-                    self.assess_error(e);
-                    break;
-                }
-            }
-        }
-    }
-}
-
-pub struct LoopBotState {
+pub struct BotLoopState {
     receiver_stdin: Receiver<Instruction>,
     receiver_websocket: Receiver<Instruction>,
     sender_websocket: Sender<Instruction>,
@@ -40,13 +20,13 @@ pub struct LoopBotState {
     routine_queue: VecDeque<Instruction>,
 }
 
-impl LoopBotState {
+impl BotLoopState {
     pub fn new(
         receiver_stdin: Receiver<Instruction>,
         receiver_websocket: Receiver<Instruction>,
         sender_websocket: Sender<Instruction>,
     ) -> Self {
-        LoopBotState {
+        BotLoopState {
             receiver_stdin,
             receiver_websocket,
             sender_websocket,
@@ -57,26 +37,50 @@ impl LoopBotState {
         }
     }
 
+    fn update_game_state_with_msgs(&mut self, crawl_message: String) {
+        let input: CrawlInputMsgs = serde_json::from_str(crawl_message.as_str()).unwrap();
+
+        for message in input.messages {
+            self.update_game_state_with_msgs_text(message.text);
+        }
+    }
+
+    fn update_game_state_with_msgs_text(&mut self, message_text: String) {
+        if message_text.find("Done exploring.").is_some() {
+            self.game_state.set_explored(true);
+        }
+
+        if message_text.find("<lightred>").is_some() {
+            self.game_state.inc_enemy_number_in_sight();
+            log_debug!(
+                "++enemy_number_in_sight: {}",
+                self.game_state.get_enemy_number_in_sight()
+            );
+        }
+
+        if message_text.find("<red>You kill").is_some() {
+            self.game_state.dec_enemy_number_in_sight();
+            log_debug!(
+                "--enemy_number_in_sight: {}",
+                self.game_state.get_enemy_number_in_sight()
+            );
+        }
+
+        if message_text.find("No target in view!").is_some() {
+            self.game_state.set_enemy_number_in_sight(0);
+            log_debug!(
+                "0 enemy_number_in_sight: {}",
+                self.game_state.get_enemy_number_in_sight()
+            );
+        }
+    }
+
     fn abc(&self) -> i32 {
         10
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_add() {
-        let (s1, r1) = channel();
-        let (_s2, r2) = channel();
-        let x = LoopBotState::new(r1, r2, s1);
-        x.assess_error(String::from(""));
-        assert_eq!(x.abc(), 10);
-    }
-}
-
-impl LoopState<String, String> for LoopBotState {
+impl LoopState<String, String> for BotLoopState {
     fn assess_iteration(&self, _t: String) {}
     fn assess_error(&self, e: String) {
         log_debug!("{}", e)
@@ -202,7 +206,7 @@ impl LoopState<String, String> for LoopBotState {
                             .sender_websocket
                             .send(Instruction::CrawlOutput("{\"msg\":\"pong\"}".to_string()));
                     }
-                    "msgs" => update_game_state_with_msgs(&mut self.game_state, crawl_message),
+                    "msgs" => self.update_game_state_with_msgs(crawl_message),
                     _ => {}
                 }
             }
@@ -216,40 +220,16 @@ impl LoopState<String, String> for LoopBotState {
     }
 }
 
-fn update_game_state_with_msgs(game_state: &mut GameState, crawl_message: String) {
-    let input: CrawlInputMsgs = serde_json::from_str(crawl_message.as_str()).unwrap();
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-    for message in input.messages {
-        update_game_state_with_msgs_text(game_state, message.text);
-    }
-}
-
-fn update_game_state_with_msgs_text(game_state: &mut GameState, message_text: String) {
-    if message_text.find("Done exploring.").is_some() {
-        game_state.set_explored(true);
-    }
-
-    if message_text.find("<lightred>").is_some() {
-        game_state.inc_enemy_number_in_sight();
-        log_debug!(
-            "++enemy_number_in_sight: {}",
-            game_state.get_enemy_number_in_sight()
-        );
-    }
-
-    if message_text.find("<red>You kill").is_some() {
-        game_state.dec_enemy_number_in_sight();
-        log_debug!(
-            "--enemy_number_in_sight: {}",
-            game_state.get_enemy_number_in_sight()
-        );
-    }
-
-    if message_text.find("No target in view!").is_some() {
-        game_state.set_enemy_number_in_sight(0);
-        log_debug!(
-            "0 enemy_number_in_sight: {}",
-            game_state.get_enemy_number_in_sight()
-        );
+    #[test]
+    fn test_add() {
+        let (s1, r1) = channel();
+        let (_s2, r2) = channel();
+        let x = BotLoopState::new(r1, r2, s1);
+        x.assess_error(String::from(""));
+        assert_eq!(x.abc(), 10);
     }
 }
