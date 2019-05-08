@@ -1,9 +1,10 @@
 extern crate websocket;
 
 use loops::bot_loop::BotLoopState;
-use loops::loop_wsrecv::ReaderLoopState;
 use loops::loop_stdin::run_loop_stdin;
-use loops::loop_wssend::run_loop_wssend;
+use loops::reader_loop::ReaderLoopState;
+use loops::writer_loop::run_writer_loop;
+use loops::writer_loop::WriterLoopState;
 use model::LoopState;
 use std::io::stdin;
 use std::net::TcpStream;
@@ -43,20 +44,19 @@ fn main() {
     let (send_stdin, recv_stdin) = channel();
     let (send_bot, recv_bot) = channel();
 
-    let mut bot_loop_state = BotLoopState::new(recv_stdin, recv_wsrecv, send_bot);
+    let mut writer_loop_state = WriterLoopState::new(ws_writer, recv_bot);
     let mut reader_loop_state = ReaderLoopState::new(ws_reader, send_wsrecv);
+    let mut bot_loop_state = BotLoopState::new(recv_stdin, recv_wsrecv, send_bot);
 
-    let loop_wssend = thread::spawn(move || run_loop_wssend(ws_writer, recv_bot));
-    // let loop_wsrecv = thread::spawn(move || run_loop_wsrecv(ws_reader, send_wsrecv));
-
-    let loop_wsrecv = thread::spawn(move || reader_loop_state.start_loop());
-    let loop_bot = thread::spawn(move || bot_loop_state.start_loop());
+    let writer_loop = thread::spawn(move || writer_loop_state.start_loop());
+    let reader_loop = thread::spawn(move || reader_loop_state.start_loop());
+    let bot_loop = thread::spawn(move || bot_loop_state.start_loop());
 
     run_loop_stdin(send_stdin);
 
-    let _ = loop_wssend.join();
-    let _ = loop_wsrecv.join();
-    let _ = loop_bot.join();
+    let _ = writer_loop.join();
+    let _ = reader_loop.join();
+    let _ = bot_loop.join();
 
     log_info!("Exited");
 }

@@ -1,10 +1,10 @@
 extern crate websocket;
 
 use super::super::model::instruction::Instruction;
-use super::super::*;
+use super::super::{log_crawl, log_debug, log_warn, LoopState};
 use serde_json::Value;
 use std::fs::File;
-use std::io::prelude::*;
+use std::io::prelude::Write;
 use std::net::TcpStream;
 use std::sync::mpsc::Sender;
 use websocket::receiver::Reader;
@@ -46,12 +46,14 @@ impl LoopState<String, String> for ReaderLoopState {
         match message {
             OwnedMessage::Close(_) => {
                 let _ = self.sender.send(Instruction::Close);
-                return Err(String::from("Exiting loop_wsrecv..."));
+                return Err(String::from("Exiting reader_loop..."));
             }
             OwnedMessage::Ping(data) => match self.sender.send(Instruction::Ping(data)) {
                 Ok(()) => (),
                 Err(e) => {
-                    return Err(String::from("An error occured while sending a pong response"));
+                    return Err(String::from(
+                        "An error occured while sending a pong response",
+                    ));
                 }
             },
             OwnedMessage::Text(data) => {
@@ -72,7 +74,9 @@ impl LoopState<String, String> for ReaderLoopState {
                 let crawl_msgs: &Value = &crawl_input["msgs"];
 
                 for crawl_msg in crawl_msgs.as_array().unwrap() {
-                    let _ = self.sender.send(Instruction::CrawlInput(crawl_msg.to_string()));
+                    let _ = self
+                        .sender
+                        .send(Instruction::CrawlInput(crawl_msg.to_string()));
                 }
             }
             _ => {

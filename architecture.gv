@@ -4,16 +4,16 @@ digraph architecture {
     edge [fontname=monospace];
 
     loop_stdin [fillcolor=burlywood1, style="filled,rounded"]
-    loop_wsrecv [fillcolor=cornsilk2, style=filled]
+    reader_loop [fillcolor=cornsilk2, style=filled]
     loop_bot [fillcolor=cornsilk2, style=filled]
-    loop_wssend [fillcolor=cornsilk2, style=filled]
+    writer_loop [fillcolor=cornsilk2, style=filled]
 
     loop_stdin -> loop_bot;
-    loop_wsrecv -> loop_bot;
-    loop_bot -> loop_wssend;
+    reader_loop -> loop_bot;
+    loop_bot -> writer_loop;
 
-    "crawl\nwebsocket" -> loop_wsrecv [color=gray]
-    loop_wssend -> "crawl\nwebsocket" [color=gray]
+    "crawl\nwebsocket" -> reader_loop [color=gray]
+    writer_loop -> "crawl\nwebsocket" [color=gray]
 
-    { rank=same; loop_wsrecv loop_wssend }
+    { rank=same; reader_loop writer_loop }
 }
