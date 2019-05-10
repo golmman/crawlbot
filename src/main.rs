@@ -1,8 +1,8 @@
 extern crate websocket;
 
 use loops::bot_loop::BotLoopState;
-use loops::loop_stdin::run_loop_stdin;
 use loops::reader_loop::ReaderLoopState;
+use loops::stdin_loop::run_stdin_loop;
 use loops::writer_loop::run_writer_loop;
 use loops::writer_loop::WriterLoopState;
 use model::LoopState;
@@ -52,7 +52,7 @@ fn main() {
     let reader_loop = thread::spawn(move || reader_loop_state.start_loop());
     let bot_loop = thread::spawn(move || bot_loop_state.start_loop());
 
-    run_loop_stdin(send_stdin);
+    run_stdin_loop(send_stdin);
 
     let _ = writer_loop.join();
     let _ = reader_loop.join();

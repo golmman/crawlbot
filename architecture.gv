@@ -3,12 +3,12 @@ digraph architecture {
     node [fontname=monospace, shape=box];
     edge [fontname=monospace];
 
-    loop_stdin [fillcolor=burlywood1, style="filled,rounded"]
+    stdin_loop [fillcolor=burlywood1, style="filled,rounded"]
     reader_loop [fillcolor=cornsilk2, style=filled]
     loop_bot [fillcolor=cornsilk2, style=filled]
     writer_loop [fillcolor=cornsilk2, style=filled]
 
-    loop_stdin -> loop_bot;
+    stdin_loop -> loop_bot;
     reader_loop -> loop_bot;
     loop_bot -> writer_loop;
 

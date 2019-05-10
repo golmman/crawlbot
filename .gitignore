@@ -1,5 +1,7 @@
-node_modules
-target
+node_modules/
+/target
 
 trash*
 debug*
+
+notes.md

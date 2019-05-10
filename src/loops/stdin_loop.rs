@@ -28,7 +28,7 @@ fn print_help() {
     println!("-------------------------------------------------------------------------------");
 }
 
-pub fn run_loop_stdin(sender_bot: Sender<Instruction>) {
+pub fn run_stdin_loop(sender_bot: Sender<Instruction>) {
     print_help();
 
     loop {
@@ -70,5 +70,5 @@ pub fn run_loop_stdin(sender_bot: Sender<Instruction>) {
         }
     }
 
-    log_info!("Exiting loop_stdin...");
+    log_info!("Exiting stdin_loop...");
 }
