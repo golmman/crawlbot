@@ -40,9 +40,19 @@ pub enum Place {
 
 #[derive(Debug, Clone, Copy)]
 pub enum InputMode {
+    // the game wants us to wait until another input_mode is sent
     Wait = 0,
+
+    // manually attack: {"msg": "input","text": "6"}
     Game = 1,
+
+    // there is 'more' the game wants to show us
+    // -> react with the escape-key: {"msg":"key","keycode":27}
     More = 5,
+
+    // the game wants us to choose from several options
+    // -> react with a choice, e.g. {"msg": "input","text": "D"}
+    Choose = 7,
 }
 
 #[derive(Debug, Clone, Copy)]

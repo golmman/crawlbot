@@ -38,6 +38,7 @@ impl BotLoopState {
     }
 
     fn update_game_state_with_msgs(&mut self, crawl_message: String) {
+        // todo: add test, where crawl_message = {"msg": "msgs"} (no "messages"-array!)
         let input: CrawlInputMsgs = serde_json::from_str(crawl_message.as_str()).unwrap();
 
         for message in input.messages {
