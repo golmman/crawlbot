@@ -37,7 +37,7 @@ impl LoopState<String, String> for ReaderLoopState {
 
         let message = match message_result {
             Ok(m) => m,
-            Err(e) => {
+            Err(_) => {
                 let _ = self.sender.send(Instruction::Close);
                 return Err(String::from("An error occured while reading a ws message."));
             }
@@ -50,7 +50,7 @@ impl LoopState<String, String> for ReaderLoopState {
             }
             OwnedMessage::Ping(data) => match self.sender.send(Instruction::Ping(data)) {
                 Ok(()) => (),
-                Err(e) => {
+                Err(_) => {
                     return Err(String::from(
                         "An error occured while sending a pong response",
                     ));
@@ -70,13 +70,13 @@ impl LoopState<String, String> for ReaderLoopState {
                     self.debug_counter += 1;
                 }
 
-                let crawl_input: Value = serde_json::from_str(data.as_str()).unwrap();
-                let crawl_msgs: &Value = &crawl_input["msgs"];
+                let mut crawl_input: Value = serde_json::from_str(data.as_str()).unwrap();
 
-                for crawl_msg in crawl_msgs.as_array().unwrap() {
+                let crawl_msgs = crawl_input["msgs"].as_array_mut().unwrap();
+                while !crawl_msgs.is_empty() {
                     let _ = self
                         .sender
-                        .send(Instruction::CrawlInput(crawl_msg.to_string()));
+                        .send(Instruction::CrawlInput(crawl_msgs.remove(0)));
                 }
             }
             _ => {

@@ -1,7 +1,7 @@
 extern crate websocket;
 
 use super::super::model::instruction::Instruction;
-use super::super::{log_crawl, log_debug, log_error, log_warn, LoopState};
+use super::super::{log_crawl, log_debug, log_warn, LoopState};
 use std::net::TcpStream;
 use std::sync::mpsc::Receiver;
 use websocket::sender::Writer;
@@ -30,7 +30,7 @@ impl LoopState<String, String> for WriterLoopState {
     fn run_loop(&mut self) -> Result<String, String> {
         let message = match self.receiver.recv() {
             Ok(m) => m,
-            Err(e) => {
+            Err(_) => {
                 return Err(String::from("An error occured while receiving a message."));
             }
         };
@@ -58,39 +58,4 @@ impl LoopState<String, String> for WriterLoopState {
 
         Ok(String::from(""))
     }
-}
-
-pub fn run_writer_loop(mut ws_writer: Writer<TcpStream>, receiver: Receiver<Instruction>) {
-    loop {
-        let message = match receiver.recv() {
-            Ok(m) => m,
-            Err(e) => {
-                log_error!("An error occured while receiving a message: {:?}", e);
-                break;
-            }
-        };
-
-        log_debug!("Processing {:?}", message);
-
-        match message {
-            Instruction::Close => {
-                let _ = ws_writer.send_message(&Message::close());
-                break;
-            }
-            Instruction::Pong(data) => {
-                let _ = ws_writer.send_message(&Message::pong(data));
-            }
-            Instruction::CrawlOutput(data) => {
-                let _ = ws_writer.send_message(&Message::text(data));
-            }
-            Instruction::CrawlInput(crawl_message) => {
-                log_warn!("CrawlInput {:?}", crawl_message);
-            }
-            _ => {
-                log_warn!("Unknown message.");
-            }
-        }
-    }
-
-    log_debug!("Exiting writer_loop...");
 }

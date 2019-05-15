@@ -122,17 +122,25 @@ fn json_deserialize3() {
             }
         }"#;
 
-    let v: Value = serde_json::from_str(data).unwrap();
+    let mut v: Value = serde_json::from_str(data).unwrap();
 
     // Access parts of the data by indexing with square brackets.
     println!("Please call {} at the number {}", v["name"], v["phones"][0]);
     println!("dasdasd {}", v["subobject"]["aaa"]);
     println!("dasdasd {}", v["subobject"]["hjjj"]);
 
-    let v2: &Value = &v["phones"];
-    for s in v2.as_array().unwrap() {
+    for s in v["phones"].as_array().unwrap() {
         println!("{}", s);
     }
+
+    println!("-----------------");
+
+
+    let vv = v["phones"].as_array_mut().unwrap();
+    while !vv.is_empty() {
+        println!("{}", vv.remove(0));
+    }
+
 }
 
 // #[derive(Debug)]
@@ -145,4 +153,11 @@ fn fmt() {
     println!("{:.5} TEST", "HelloWorld");
     println!("{:5.5} TEST", "HelloWorld");
     println!("{:5.5} TEST", "HW");
+}
+
+#[test]
+fn str_contains() {
+    let x = "<lightred>A kobold is nearby!";
+
+    assert!(x.contains("<lightred>"))
 }

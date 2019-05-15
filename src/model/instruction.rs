@@ -1,6 +1,7 @@
 use std::fmt::Display;
 use std::fmt::Formatter;
 use std::fmt::Result;
+use serde_json::Value;
 
 use super::super::model::GameState;
 
@@ -28,7 +29,7 @@ pub enum Instruction {
     Script(fn(GameState) -> fn() -> Routine),
     
     // control instructions
-    CrawlInput(String),
+    CrawlInput(Value),
     CrawlOutput(String),
     Ping(Vec<u8>),
     Pong(Vec<u8>),

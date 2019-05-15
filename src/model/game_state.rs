@@ -38,6 +38,7 @@ pub enum Place {
     Ziggurat(u32),
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub enum InputMode {
     // the game wants us to wait until another input_mode is sent
@@ -68,6 +69,7 @@ pub struct GameState {
     place: Place,
 }
 
+#[allow(dead_code)]
 impl GameState {
     pub fn new() -> Self {
         GameState {
