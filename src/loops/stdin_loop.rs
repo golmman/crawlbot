@@ -13,7 +13,9 @@ fn print_help() {
     println!("commands:");
     println!("/abandon              abandons the current game");
     println!("/clear_routines       clears the routine queue");
-    println!("/c or /close          sends a close message to crawl, exits crawlbot");
+    println!("/exit");
+    println!("or /q or /quit");
+    println!("or /c or /close       sends a close message to crawl, exits crawlbot");
     println!("/s or /get_status     prints a status report");
     println!("/idle5                lets crawlbot idle for 5 tics");
     println!("/idle10               lets crawlbot idle for 10 tics");
@@ -42,7 +44,7 @@ pub fn run_stdin_loop(sender_bot: Sender<Instruction>) {
             "" => Instruction::Pause,
             "/abandon" => Instruction::Abandon,
             "/clear_routines" => Instruction::ClearRoutines,
-            "/c" | "/close" => {
+            "/exit" | "/q" | "/quit" | "/c" | "/close" => {
                 let _ = sender_bot.send(Instruction::Close);
                 break;
             }

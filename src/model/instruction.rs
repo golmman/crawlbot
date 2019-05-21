@@ -1,11 +1,9 @@
-use std::fmt::Display;
-use std::fmt::Formatter;
-use std::fmt::Result;
 use serde_json::Value;
 
 use super::super::model::GameState;
+use std::collections::VecDeque;
 
-pub type Routine = Vec<Instruction>;
+pub type Routine = VecDeque<Instruction>;
 
 #[derive(Clone, Debug)]
 pub enum Instruction {
@@ -26,19 +24,13 @@ pub enum Instruction {
     PickTrBe,
     Start,
     IfThenElse(fn(GameState) -> bool, fn() -> Routine, fn() -> Routine),
-    Script(fn(GameState) -> fn() -> Routine),
-    
+    Script(fn(GameState) -> Routine),
+
     // control instructions
     CrawlInput(Value),
     CrawlOutput(String),
     Ping(Vec<u8>),
     Pong(Vec<u8>),
-}
-
-impl Display for Instruction {
-    fn fmt(&self, f: &mut Formatter) -> Result {
-        write!(f, "Instruction")
-    }
 }
 
 impl Instruction {

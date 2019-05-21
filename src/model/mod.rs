@@ -5,4 +5,5 @@ pub mod instruction;
 
 pub use self::crawl_input_msgs::CrawlInputMsgs;
 pub use self::game_state::GameState;
+pub use self::game_state::InputMode;
 pub use self::loop_state::LoopState;

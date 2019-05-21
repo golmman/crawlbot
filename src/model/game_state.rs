@@ -54,6 +54,20 @@ pub enum InputMode {
     // the game wants us to choose from several options
     // -> react with a choice, e.g. {"msg": "input","text": "D"}
     Choose = 7,
+
+    Unknown,
+}
+
+impl InputMode {
+    pub fn from_i64(i: i64) -> Self {
+        match i {
+            0 => InputMode::Wait,
+            1 => InputMode::Game,
+            5 => InputMode::More,
+            7 => InputMode::Choose,
+            _ => InputMode::Unknown,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
