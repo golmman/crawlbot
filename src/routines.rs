@@ -1,5 +1,6 @@
 use crate::model::instruction::Instruction;
 use crate::model::instruction::Routine;
+use crate::model::game_state::InputMode;
 use std::collections::VecDeque;
 
 fn cr_out(s: &str) -> Instruction {
@@ -9,6 +10,22 @@ fn cr_out(s: &str) -> Instruction {
 pub fn supply_routine_main() -> Routine {
     VecDeque::from(vec![Instruction::Script(|game_state| {
         let mut instruction_queue: Routine = VecDeque::new();
+
+        match game_state.get_input_mode() {
+            InputMode::Choose => {
+                instruction_queue.push_back(cr_out(r#"{"msg": "input","text": "D"}"#));
+                instruction_queue.append(&mut supply_routine_main());
+                return instruction_queue;
+            }
+            InputMode::Game => {}
+            InputMode::More => {
+                instruction_queue.push_back(cr_out(r#"{"msg":"key","keycode":27}"#));
+                instruction_queue.append(&mut supply_routine_main());
+                return instruction_queue;
+            }
+            InputMode::Unknown => {}
+            InputMode::Wait => {}
+        }
 
         if game_state.get_enemy_number_in_sight() == 0 {
             // instruction_queue.append(&mut VecDeque::from(supply_routine_explore()));

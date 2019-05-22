@@ -44,7 +44,15 @@ pub enum InputMode {
     // the game wants us to wait until another input_mode is sent
     Wait = 0,
 
+    // manually attack: {"msg": "input","text": "1"}
+    // manually attack: {"msg": "input","text": "2"}
+    // manually attack: {"msg": "input","text": "4"}
+    // manually attack: {"msg": "input","text": "5"}
     // manually attack: {"msg": "input","text": "6"}
+    // manually attack: {"msg": "input","text": "7"}
+    // manually attack: {"msg": "input","text": "8"}
+    // manually attack: {"msg": "input","text": "9"}
+    // manually attack: {"msg": "input","text": "s"}
     Game = 1,
 
     // there is 'more' the game wants to show us

@@ -1,5 +1,5 @@
 use crate::loops::bot_loop::BotLoopState;
-use crate::model::InputMode;
+use crate::model::game_state::InputMode;
 use crate::{log_crawl, log_debug};
 use serde_json::Value;
 
@@ -7,6 +7,23 @@ impl BotLoopState {
     pub fn update_input_mode(&mut self, crawl_message: Value) {
         if let Some(m) = crawl_message["mode"].as_i64() {
             self.game_state.set_input_mode(InputMode::from_i64(m));
+        }
+    }
+
+    pub fn update_game_state_with_cells(&mut self, mut crawl_message: Value) {
+        let empty: &mut Vec<Value> = &mut Vec::new();
+        let messages = crawl_message["cells"].as_array_mut().unwrap_or(empty);
+
+        while !messages.is_empty() {
+            let mon_name = &messages.remove(0)["mon"]["name"];
+            if let Some(m) = mon_name.as_str() {
+                // plant: threat = 0
+                // yusuf: threat = 2
+
+                // done exploring!
+                // {\"msgs\":[{\"msg\":\"msgs\",\"messages\":[{\"text\":\"<lightgrey>Done exploring.<lightgrey>\",\"turn\":631,\"channel\":0}]}\n,{\"msg\":\"input_mode\",\"mode\":1}\n]}
+                log_debug!("MONSTER SIGHTED: {}", m);
+            }
         }
     }
 

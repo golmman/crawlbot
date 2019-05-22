@@ -4,7 +4,7 @@ use loops::bot_loop::BotLoopState;
 use loops::reader_loop::ReaderLoopState;
 use loops::stdin_loop::run_stdin_loop;
 use loops::writer_loop::WriterLoopState;
-use model::LoopState;
+use model::loop_state::LoopState;
 use std::io::stdin;
 use std::net::TcpStream;
 use std::sync::mpsc::channel;

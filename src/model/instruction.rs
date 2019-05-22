@@ -1,6 +1,6 @@
 use serde_json::Value;
 
-use crate::model::GameState;
+use crate::model::game_state::GameState;
 use std::collections::VecDeque;
 
 pub type Routine = VecDeque<Instruction>;

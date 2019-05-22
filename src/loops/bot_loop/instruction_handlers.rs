@@ -1,6 +1,6 @@
 use crate::loops::bot_loop::BotLoopState;
+use crate::model::game_state::GameState;
 use crate::model::instruction::{Instruction, Routine};
-use crate::model::GameState;
 use crate::routines::{
     supply_routine_abandon, supply_routine_idle10, supply_routine_idle5, supply_routine_main,
     supply_routine_pick_mifi, supply_routine_pick_trbe, supply_routine_start,
@@ -26,9 +26,10 @@ impl BotLoopState {
         let crawl_msg = &crawl_message["msg"];
 
         match crawl_msg.as_str().unwrap() {
-            "ping" => self.pong(),
-            "msgs" => self.update_game_state_with_msgs(crawl_message),
+            "map" => self.update_game_state_with_cells(crawl_message),
             "input_mode" => self.update_input_mode(crawl_message),
+            "msgs" => self.update_game_state_with_msgs(crawl_message),
+            "ping" => self.pong(),
             _ => {}
         }
     }

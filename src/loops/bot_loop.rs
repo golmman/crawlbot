@@ -1,7 +1,7 @@
 extern crate websocket;
 
+use crate::model::game_state::GameState;
 use crate::model::instruction::Instruction;
-use crate::model::GameState;
 use crate::{log_crawl, log_debug, log_warn, LoopState};
 use std::collections::VecDeque;
 use std::sync::mpsc::Receiver;
@@ -49,7 +49,7 @@ impl LoopState<String, String> for BotLoopState {
     }
 
     fn run_loop(&mut self) -> Result<String, String> {
-        std::thread::sleep(std::time::Duration::from_millis(100));
+        std::thread::sleep(std::time::Duration::from_millis(10));
 
         self.fill_primary_queue();
 
