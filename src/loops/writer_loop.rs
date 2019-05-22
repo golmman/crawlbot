@@ -1,7 +1,7 @@
 extern crate websocket;
 
-use super::super::model::instruction::Instruction;
-use super::super::{log_crawl, log_debug, log_warn, LoopState};
+use crate::model::instruction::Instruction;
+use crate::{log_crawl, log_debug, log_warn, LoopState};
 use std::net::TcpStream;
 use std::sync::mpsc::Receiver;
 use websocket::sender::Writer;

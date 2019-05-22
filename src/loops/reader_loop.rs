@@ -1,7 +1,7 @@
 extern crate websocket;
 
-use super::super::model::instruction::Instruction;
-use super::super::{log_crawl, log_debug, log_warn, LoopState};
+use crate::model::instruction::Instruction;
+use crate::{log_crawl, log_debug, log_warn, LoopState};
 use serde_json::Value;
 use std::fs::File;
 use std::io::prelude::Write;
