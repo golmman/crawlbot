@@ -24,6 +24,21 @@ impl ReaderLoopState {
             debug_counter: 0,
         }
     }
+
+    fn log_text_data(&mut self, data: &str) {
+        if data.len() < 10000 {
+            log_debug!("Processing {:?}", data);
+        } else {
+            log_debug!(
+                "Text was too long! -> stored in debug{}.json",
+                self.debug_counter
+            );
+            let filename = format!("debug{}.json", self.debug_counter);
+            let mut file = File::create(filename).expect("file to be created");
+            let _ = file.write_all(data.as_bytes());
+            self.debug_counter += 1;
+        }
+    }
 }
 
 impl LoopState<String, String> for ReaderLoopState {
@@ -33,7 +48,7 @@ impl LoopState<String, String> for ReaderLoopState {
     }
 
     fn run_loop(&mut self) -> Result<String, String> {
-        let message_result = self.ws_reader.incoming_messages().next().unwrap();
+        let message_result = self.ws_reader.incoming_messages().next().expect("there to be a next message");
 
         let message = match message_result {
             Ok(m) => m,
@@ -57,26 +72,14 @@ impl LoopState<String, String> for ReaderLoopState {
                 }
             },
             OwnedMessage::Text(data) => {
-                if data.len() < 10000 {
-                    log_debug!("Processing {:?}", data);
-                } else {
-                    log_debug!(
-                        "Text was too long! -> stored in debug{}.json",
-                        self.debug_counter
-                    );
-                    let filename = format!("debug{}.json", self.debug_counter);
-                    let mut file = File::create(filename).unwrap();
-                    let _ = file.write_all(data.as_bytes());
-                    self.debug_counter += 1;
-                }
+                self.log_text_data(&data);
 
-                let mut crawl_input: Value = serde_json::from_str(data.as_str()).unwrap();
+                let crawl_input: Value =
+                    serde_json::from_str(&data).expect("data to be deserializable");
+                let crawl_msgs = crawl_input["msgs"].as_array().expect("msgs to be an array");
 
-                let crawl_msgs = crawl_input["msgs"].as_array_mut().unwrap();
-                while !crawl_msgs.is_empty() {
-                    let _ = self
-                        .sender
-                        .send(Instruction::CrawlInput(crawl_msgs.remove(0)));
+                for x in crawl_msgs {
+                    let _ = self.sender.send(Instruction::CrawlInput(x.clone()));
                 }
             }
             _ => {

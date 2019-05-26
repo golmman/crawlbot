@@ -12,28 +12,30 @@ impl BotLoopState {
 
     pub fn update_game_state_with_cells(&mut self, mut crawl_message: Value) {
         let empty: &mut Vec<Value> = &mut Vec::new();
-        let messages = crawl_message["cells"].as_array_mut().unwrap_or(empty);
+        let cells = crawl_message["cells"].as_array().unwrap_or(empty);
 
-        while !messages.is_empty() {
-            let mon_name = &messages.remove(0)["mon"]["name"];
-            if let Some(m) = mon_name.as_str() {
-                // plant: threat = 0
-                // yusuf: threat = 2
-
-                // done exploring!
-                // {\"msgs\":[{\"msg\":\"msgs\",\"messages\":[{\"text\":\"<lightgrey>Done exploring.<lightgrey>\",\"turn\":631,\"channel\":0}]}\n,{\"msg\":\"input_mode\",\"mode\":1}\n]}
-                log_debug!("MONSTER SIGHTED: {}", m);
+        for cell in cells {
+            if let Some(mon) = cell["mon"].as_object() {
+                let mon_name = mon["name"].as_str().expect("name to be a string");
+                let mon_threat = mon["threat"].as_i64().expect("threat to be an integer");
+                log_debug!("MONSTER SIGHTED: {}, THREAT: {}", mon_name, mon_threat);
             }
+
+            // plant: threat = 0
+            // yusuf: threat = 2
+
+            // done exploring!
+            // {\"msgs\":[{\"msg\":\"msgs\",\"messages\":[{\"text\":\"<lightgrey>Done exploring.<lightgrey>\",\"turn\":631,\"channel\":0}]}\n,{\"msg\":\"input_mode\",\"mode\":1}\n]}
         }
     }
 
     pub fn update_game_state_with_msgs(&mut self, mut crawl_message: Value) {
         let empty: &mut Vec<Value> = &mut Vec::new();
-        let messages = crawl_message["messages"].as_array_mut().unwrap_or(empty);
+        let messages = crawl_message["messages"].as_array().unwrap_or(empty);
 
-        while !messages.is_empty() {
-            let text = &messages.remove(0)["text"];
-            self.update_game_state_with_msgs_text(text.as_str().unwrap());
+        for message in messages {
+            let text = message["text"].as_str().expect("text to be a string");
+            self.update_game_state_with_msgs_text(text);
         }
     }
 
@@ -73,10 +75,54 @@ mod tests {
     use super::*;
     use std::sync::mpsc::channel;
 
+    use serde_json::Result;
+
     fn create_mock_bot_loop_state() -> BotLoopState {
         let (s1, r1) = channel();
         let (_s2, r2) = channel();
         BotLoopState::new(r1, r2, s1)
+    }
+
+    fn print_value_option(o: Option<Value>) {
+        println!("{:?}", o);
+    }
+
+    fn print_value(v: &Value) {
+        println!("{:?}", v);
+    }
+
+    #[test]
+    fn t12345() {
+        // prepare
+        let mut bot_loop_state = create_mock_bot_loop_state();
+        let crawl_message: Value = serde_json::from_str(
+            r#"
+            {
+                "msg": "msgs",
+                "messages": [
+                    {
+                        "text": "<lightred>A kobold is nearby!<lightgrey>",
+                        "turn":17,
+                        "channel":6
+                    },
+                    {
+                        "info": 123
+                    }
+                ]
+            }
+            "#,
+        )
+        .unwrap();
+
+        println!("{:?}", crawl_message.pointer("/msg1"));
+        println!("{:?}", crawl_message.pointer("/msg"));
+        println!("{:?}", crawl_message.pointer("/messages/1/info"));
+
+        let a = crawl_message["messages"].as_array().unwrap();
+
+        for x in a.iter() {
+            print_value(x);
+        }
     }
 
     #[test]
