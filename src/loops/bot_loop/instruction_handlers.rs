@@ -13,7 +13,7 @@ use serde_json::Value;
 
 impl BotLoopState {
     pub fn abandon(&mut self) {
-        self.enqueue_routine(supply_routine_abandon);
+        self.enqueue_primary(supply_routine_abandon);
     }
 
     pub fn clear_routines(&mut self) {
@@ -42,15 +42,15 @@ impl BotLoopState {
     }
 
     pub fn descend(&mut self) {
-        self.enqueue_routine(supply_routine_descend);
+        self.enqueue_primary(supply_routine_descend);
     }
 
     pub fn explore(&mut self) {
-        self.enqueue_routine(supply_routine_explore);
+        self.enqueue_primary(supply_routine_explore);
     }
 
     pub fn fight(&mut self) {
-        self.enqueue_routine(supply_routine_fight);
+        self.enqueue_primary(supply_routine_fight);
     }
 
     pub fn get_status(&mut self) {
@@ -61,15 +61,15 @@ impl BotLoopState {
     }
 
     pub fn idle10(&mut self) {
-        self.enqueue_routine(supply_routine_idle10);
+        self.enqueue_secondary(supply_routine_idle10);
     }
 
     pub fn idle5(&mut self) {
-        self.enqueue_routine(supply_routine_idle5);
+        self.enqueue_secondary(supply_routine_idle5);
     }
 
     pub fn main(&mut self) {
-        self.enqueue_routine(supply_routine_main);
+        self.enqueue_secondary(supply_routine_main);
     }
 
     pub fn nothing(&mut self) {}
@@ -79,11 +79,11 @@ impl BotLoopState {
     }
 
     pub fn pick_mifi(&mut self) {
-        self.enqueue_routine(supply_routine_pick_mifi);
+        self.enqueue_primary(supply_routine_pick_mifi);
     }
 
     pub fn pick_trbe(&mut self) {
-        self.enqueue_routine(supply_routine_pick_trbe);
+        self.enqueue_primary(supply_routine_pick_trbe);
     }
 
     pub fn ping(&mut self, data: Vec<u8>) {
@@ -93,46 +93,47 @@ impl BotLoopState {
     pub fn script(&mut self, crawl_script: CrawlScript) {
         self.secondary_queue
             .append(&mut crawl_script.evaluate(&self.game_state))
+        // self.enqueue_secondary(|| crawl_script.evaluate(&self.game_state))
     }
 
     pub fn start(&mut self) {
-        self.enqueue_routine(supply_routine_start);
+        self.enqueue_primary(supply_routine_start);
     }
 
     pub fn step_south_west(&mut self) {
-        self.enqueue_routine(supply_routine_step_south_west);
+        self.enqueue_primary(supply_routine_step_south_west);
     }
 
     pub fn step_south(&mut self) {
-        self.enqueue_routine(supply_routine_step_south);
+        self.enqueue_primary(supply_routine_step_south);
     }
 
     pub fn step_south_east(&mut self) {
-        self.enqueue_routine(supply_routine_step_south_east);
+        self.enqueue_primary(supply_routine_step_south_east);
     }
 
     pub fn step_west(&mut self) {
-        self.enqueue_routine(supply_routine_step_west);
+        self.enqueue_primary(supply_routine_step_west);
     }
 
     pub fn step_none(&mut self) {
-        self.enqueue_routine(supply_routine_step_none);
+        self.enqueue_primary(supply_routine_step_none);
     }
 
     pub fn step_east(&mut self) {
-        self.enqueue_routine(supply_routine_step_east);
+        self.enqueue_primary(supply_routine_step_east);
     }
 
     pub fn step_north_west(&mut self) {
-        self.enqueue_routine(supply_routine_step_north_west);
+        self.enqueue_primary(supply_routine_step_north_west);
     }
 
     pub fn step_north(&mut self) {
-        self.enqueue_routine(supply_routine_step_north);
+        self.enqueue_primary(supply_routine_step_north);
     }
 
     pub fn step_north_east(&mut self) {
-        self.enqueue_routine(supply_routine_step_north_east);
+        self.enqueue_primary(supply_routine_step_north_east);
     }
 
     pub fn unpause(&mut self) {
