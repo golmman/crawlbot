@@ -107,3 +107,77 @@ pub fn supply_routine_start() -> Routine {
         Instruction::Pause,
     ])
 }
+
+pub fn supply_routine_fight() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg":"key","keycode":9}"#),
+    ])
+}
+
+pub fn supply_routine_explore() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "o"}"#),
+    ])
+}
+
+pub fn supply_routine_descend() -> Routine {
+    VecDeque::from(vec![
+            cr_out(r#"{"msg":"key","keycode":7}"#),
+            cr_out(r#"{"msg":"input","text":">"}"#),
+    ])
+}
+
+pub fn supply_routine_step_south_west() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "1"}"#),
+    ])
+}
+
+pub fn supply_routine_step_south() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "2"}"#),
+    ])
+}
+
+pub fn supply_routine_step_south_east() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "3"}"#),
+    ])
+}
+
+pub fn supply_routine_step_west() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "4"}"#),
+    ])
+}
+
+pub fn supply_routine_step_none() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "5"}"#),
+    ])
+}
+
+pub fn supply_routine_step_east() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "6"}"#),
+    ])
+}
+
+pub fn supply_routine_step_north_west() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "7"}"#),
+    ])
+}
+
+pub fn supply_routine_step_north() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "8"}"#),
+    ])
+}
+
+pub fn supply_routine_step_north_east() -> Routine {
+    VecDeque::from(vec![
+        cr_out(r#"{"msg": "input","text": "9"}"#),
+    ])
+}
+

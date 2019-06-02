@@ -59,6 +59,9 @@ impl LoopState<String, String> for BotLoopState {
             Instruction::Close => self.close(),
             Instruction::CrawlInput(crawl_message) => self.crawl_input(crawl_message),
             Instruction::CrawlOutput(data) => self.crawl_output(data),
+            Instruction::Descend => self.descend(),
+            Instruction::Explore => self.explore(),
+            Instruction::Fight => self.fight(),
             Instruction::GetStatus => self.get_status(),
             Instruction::Idle10 => self.idle10(),
             Instruction::Idle5 => self.idle5(),
@@ -70,9 +73,18 @@ impl LoopState<String, String> for BotLoopState {
             Instruction::Ping(data) => self.ping(data),
             Instruction::Script(evaluate) => self.script(evaluate),
             Instruction::Start => self.start(),
+            Instruction::StepSouthWest => self.step_south_west(),
+            Instruction::StepSouth => self.step_south(),
+            Instruction::StepSouthEast => self.step_south_east(),
+            Instruction::StepWest => self.step_west(),
+            Instruction::StepNone => self.step_none(),
+            Instruction::StepEast => self.step_east(),
+            Instruction::StepNorthWest => self.step_north_west(),
+            Instruction::StepNorth => self.step_north(),
+            Instruction::StepNorthEast => self.step_north_east(),
             Instruction::Unpause => self.unpause(),
             _ => {
-                log_warn!("Unknown message.");
+                log_warn!("Instruction no yet implemented.");
             }
         };
 

@@ -50,6 +50,19 @@ pub enum Instruction {
     PickTrBe,
     Start,
     Script(CrawlScript),
+    
+    StepSouthWest,
+    StepSouth,
+    StepSouthEast,
+    StepWest,
+    StepNone,
+    StepEast,
+    StepNorthWest,
+    StepNorth,
+    StepNorthEast,
+    Fight,
+    Explore,
+    Descend,
 
     // control instructions
     CrawlInput(Value),
