@@ -27,7 +27,7 @@ impl ReaderLoopState {
 
     fn log_text_data(&mut self, data: &str) {
         if data.len() < 10000 {
-            log_debug!("Processing {:?}", data);
+            log_debug!("Processing {}", data);
         } else {
             log_debug!(
                 "Text was too long! -> stored in debug{}.json",

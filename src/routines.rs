@@ -1,4 +1,5 @@
 use crate::model::instruction::Instruction;
+use crate::model::instruction::CrawlScript;
 use crate::model::instruction::Routine;
 use crate::model::game_state::InputMode;
 use std::collections::VecDeque;
@@ -8,8 +9,16 @@ fn cr_out(s: &str) -> Instruction {
 }
 
 pub fn supply_routine_main() -> Routine {
-    VecDeque::from(vec![Instruction::Script(|game_state| {
+    VecDeque::from(vec![Instruction::Script(CrawlScript::new(|game_state| {
         let mut instruction_queue: Routine = VecDeque::new();
+
+        if game_state.is_explored() {
+            instruction_queue.push_back(cr_out(r#"{"msg":"key","keycode":7}"#));
+            instruction_queue.push_back(cr_out(r#"{"msg":"input","text":">"}"#));
+            
+            instruction_queue.append(&mut supply_routine_main());
+            return instruction_queue;
+        }
 
         match game_state.get_input_mode() {
             InputMode::Choose => {
@@ -35,9 +44,15 @@ pub fn supply_routine_main() -> Routine {
             instruction_queue.push_back(cr_out(r#"{"msg":"key","keycode":9}"#));
         }
 
+        // if !game_state.get_enemies_in_sight().is_empty() {
+        //     instruction_queue.push_back(cr_out(r#"{"msg":"input","text":"o"}"#));
+        // } else {
+        //     instruction_queue.push_back(cr_out(r#"{"msg":"key","keycode":9}"#));
+        // }
+
         instruction_queue.append(&mut supply_routine_main());
         instruction_queue
-    })])
+    }))])
 }
 
 pub fn supply_routine_abandon() -> Routine {

@@ -1,9 +1,35 @@
+use std::fmt::Formatter;
+use std::fmt::Debug;
+use std::fmt::Result;
 use serde_json::Value;
 
 use crate::model::game_state::GameState;
 use std::collections::VecDeque;
 
 pub type Routine = VecDeque<Instruction>;
+
+#[derive(Clone)]
+pub struct CrawlScript {
+    script: fn(&GameState) -> Routine,
+}
+
+impl CrawlScript {
+    pub fn new(script: fn(&GameState) -> Routine) -> Self {
+        Self {
+            script,
+        }
+    }
+
+    pub fn evaluate(&self, game_state: &GameState) -> Routine {
+        (self.script)(game_state)
+    }
+}
+
+impl Debug for CrawlScript {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        write!(f, "CrawlScript")
+    }
+}
 
 #[derive(Clone, Debug)]
 pub enum Instruction {
@@ -23,8 +49,7 @@ pub enum Instruction {
     PickMiFi,
     PickTrBe,
     Start,
-    IfThenElse(fn(GameState) -> bool, fn() -> Routine, fn() -> Routine),
-    Script(fn(GameState) -> Routine),
+    Script(CrawlScript),
 
     // control instructions
     CrawlInput(Value),
@@ -41,3 +66,9 @@ impl Instruction {
         }
     }
 }
+
+// impl Debug for Instruction {
+//     fn fmt(&self, f: &mut Formatter) -> Result {
+//         write!(f, "Instruction")
+//     }
+// }

@@ -1,3 +1,6 @@
+use serde::Deserialize;
+use serde_json::Value;
+
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
 pub enum Place {
@@ -78,16 +81,30 @@ impl InputMode {
     }
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Deserialize, Debug, Clone)]
+pub struct CwsMon {
+    name: Option<String>,
+    threat: Option<i64>,
+}
+
+impl CwsMon {
+    pub fn from_value(value: &Value) -> Self {
+        let s: Self = serde_json::from_value(value.clone()).expect("value to be defined");
+        s
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct GameState {
     // control
     paused: bool,
     idle_ticks: u32,
 
     // crawl knowledge
+    enemies_in_sight: Vec<CwsMon>,
     enemy_number_in_sight: u32,
-    input_mode: InputMode,
     explored: bool,
+    input_mode: InputMode,
     place: Place,
 }
 
@@ -98,6 +115,7 @@ impl GameState {
             paused: true,
             idle_ticks: 0,
 
+            enemies_in_sight: Vec::new(),
             enemy_number_in_sight: 0,
             input_mode: InputMode::Wait,
             explored: false,
@@ -105,7 +123,7 @@ impl GameState {
         }
     }
 
-    // 
+    //
     pub fn pause(&mut self) {
         self.set_paused(true);
         self.set_idle_ticks(0);
@@ -115,9 +133,9 @@ impl GameState {
         self.set_paused(false);
         self.set_idle_ticks(0);
     }
-    
+
     // getters and setters
-    pub fn is_paused(self) -> bool {
+    pub fn is_paused(&self) -> bool {
         self.paused
     }
 
@@ -125,7 +143,7 @@ impl GameState {
         self.paused = paused;
     }
 
-    pub fn is_explored(self) -> bool {
+    pub fn is_explored(&self) -> bool {
         self.explored
     }
 
@@ -133,7 +151,7 @@ impl GameState {
         self.explored = explored;
     }
 
-    pub fn get_place(self) -> Place {
+    pub fn get_place(&self) -> Place {
         self.place
     }
 
@@ -141,7 +159,7 @@ impl GameState {
         self.place = place;
     }
 
-    pub fn get_idle_ticks(self) -> u32 {
+    pub fn get_idle_ticks(&self) -> u32 {
         self.idle_ticks
     }
 
@@ -154,7 +172,21 @@ impl GameState {
     }
 
     //
-    pub fn get_enemy_number_in_sight(self) -> u32 {
+    pub fn get_enemies_in_sight(&self) -> &Vec<CwsMon> {
+        &self.enemies_in_sight
+    }
+
+    pub fn add_enemy_in_sight(&mut self, enemy: &CwsMon) -> &Vec<CwsMon> {
+        self.enemies_in_sight.push(enemy.clone());
+        &self.enemies_in_sight
+    }
+
+    pub fn clear_enemies_in_sight(&mut self) -> &Vec<CwsMon> {
+        self.enemies_in_sight.clear();
+        &self.enemies_in_sight
+    }
+
+    pub fn get_enemy_number_in_sight(&self) -> u32 {
         self.enemy_number_in_sight
     }
 
@@ -170,7 +202,7 @@ impl GameState {
         self.enemy_number_in_sight += 1;
     }
 
-    pub fn get_input_mode(self) -> InputMode {
+    pub fn get_input_mode(&self) -> InputMode {
         self.input_mode
     }
 

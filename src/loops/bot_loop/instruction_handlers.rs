@@ -1,6 +1,5 @@
 use crate::loops::bot_loop::BotLoopState;
-use crate::model::game_state::GameState;
-use crate::model::instruction::{Instruction, Routine};
+use crate::model::instruction::{Instruction, CrawlScript};
 use crate::routines::{
     supply_routine_abandon, supply_routine_idle10, supply_routine_idle5, supply_routine_main,
     supply_routine_pick_mifi, supply_routine_pick_trbe, supply_routine_start,
@@ -50,18 +49,6 @@ impl BotLoopState {
     pub fn idle5(&mut self) {
         self.enqueue_routine(supply_routine_idle5);
     }
-    pub fn if_then_else(
-        &mut self,
-        check: fn(GameState) -> bool,
-        then_routine_supplier: fn() -> Routine,
-        else_routine_supplier: fn() -> Routine,
-    ) {
-        if check(self.game_state) {
-            self.enqueue_routine(then_routine_supplier);
-        } else {
-            self.enqueue_routine(else_routine_supplier);
-        }
-    }
     pub fn main(&mut self) {
         self.enqueue_routine(supply_routine_main);
     }
@@ -78,8 +65,8 @@ impl BotLoopState {
     pub fn ping(&mut self, data: Vec<u8>) {
         let _ = self.sender_websocket.send(Instruction::Pong(data));
     }
-    pub fn script(&mut self, evaluate: fn(GameState) -> Routine) {
-        self.secondary_queue.append(&mut evaluate(self.game_state))
+    pub fn script(&mut self, crawl_script: CrawlScript) {
+        self.secondary_queue.append(&mut crawl_script.evaluate(&self.game_state))
     }
     pub fn start(&mut self) {
         self.enqueue_routine(supply_routine_start);
