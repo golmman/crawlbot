@@ -101,8 +101,8 @@ pub struct GameState {
     idle_ticks: u32,
 
     // crawl knowledge
-    enemies_in_sight: Vec<CwsMon>,
-    enemy_number_in_sight: u32,
+    monsters_in_sight: Vec<CwsMon>,
+    monster_number_in_sight: u32,
     explored: bool,
     input_mode: InputMode,
     place: Place,
@@ -115,8 +115,8 @@ impl GameState {
             paused: true,
             idle_ticks: 0,
 
-            enemies_in_sight: Vec::new(),
-            enemy_number_in_sight: 0,
+            monsters_in_sight: Vec::new(),
+            monster_number_in_sight: 0,
             input_mode: InputMode::Wait,
             explored: false,
             place: Place::Dungeon(1),
@@ -172,34 +172,34 @@ impl GameState {
     }
 
     //
-    pub fn get_enemies_in_sight(&self) -> &Vec<CwsMon> {
-        &self.enemies_in_sight
+    pub fn get_monsters_in_sight(&self) -> &Vec<CwsMon> {
+        &self.monsters_in_sight
     }
 
-    pub fn add_enemy_in_sight(&mut self, enemy: &CwsMon) -> &Vec<CwsMon> {
-        self.enemies_in_sight.push(enemy.clone());
-        &self.enemies_in_sight
+    pub fn add_monster_in_sight(&mut self, monster: &CwsMon) -> &Vec<CwsMon> {
+        self.monsters_in_sight.push(monster.clone());
+        &self.monsters_in_sight
     }
 
-    pub fn clear_enemies_in_sight(&mut self) -> &Vec<CwsMon> {
-        self.enemies_in_sight.clear();
-        &self.enemies_in_sight
+    pub fn clear_monsters_in_sight(&mut self) -> &Vec<CwsMon> {
+        self.monsters_in_sight.clear();
+        &self.monsters_in_sight
     }
 
-    pub fn get_enemy_number_in_sight(&self) -> u32 {
-        self.enemy_number_in_sight
+    pub fn get_monster_number_in_sight(&self) -> u32 {
+        self.monster_number_in_sight
     }
 
-    pub fn set_enemy_number_in_sight(&mut self, n: u32) {
-        self.enemy_number_in_sight = n;
+    pub fn set_monster_number_in_sight(&mut self, n: u32) {
+        self.monster_number_in_sight = n;
     }
 
-    pub fn dec_enemy_number_in_sight(&mut self) {
-        self.enemy_number_in_sight -= 1;
+    pub fn dec_monster_number_in_sight(&mut self) {
+        self.monster_number_in_sight -= 1;
     }
 
-    pub fn inc_enemy_number_in_sight(&mut self) {
-        self.enemy_number_in_sight += 1;
+    pub fn inc_monster_number_in_sight(&mut self) {
+        self.monster_number_in_sight += 1;
     }
 
     pub fn get_input_mode(&self) -> InputMode {

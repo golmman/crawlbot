@@ -15,12 +15,12 @@ impl BotLoopState {
         let empty: &Vec<Value> = &Vec::new();
         let cells = crawl_message["cells"].as_array().unwrap_or(empty);
 
-        self.game_state.clear_enemies_in_sight();
+        self.game_state.clear_monsters_in_sight();
 
         for cell in cells {
             if cell["mon"].is_object() {
                 let mon: CwsMon = CwsMon::from_value(&cell["mon"]);
-                self.game_state.add_enemy_in_sight(&mon);
+        self.game_state.add_monster_in_sight(&mon);
                 // log_debug!("MONSTER SIGHTED: {:?}", mon);
             }
 
@@ -48,26 +48,26 @@ impl BotLoopState {
         }
 
         if message_text.contains("<lightred>") {
-            self.game_state.inc_enemy_number_in_sight();
+            self.game_state.inc_monster_number_in_sight();
             log_debug!(
-                "++enemy_number_in_sight: {}",
-                self.game_state.get_enemy_number_in_sight()
+                "++monster_number_in_sight: {}",
+                self.game_state.get_monster_number_in_sight()
             );
         }
 
         if message_text.contains("<red>You kill") {
-            self.game_state.dec_enemy_number_in_sight();
+            self.game_state.dec_monster_number_in_sight();
             log_debug!(
-                "--enemy_number_in_sight: {}",
-                self.game_state.get_enemy_number_in_sight()
+                "--monster_number_in_sight: {}",
+                self.game_state.get_monster_number_in_sight()
             );
         }
 
         if message_text.contains("No target in view!") {
-            self.game_state.set_enemy_number_in_sight(0);
+            self.game_state.set_monster_number_in_sight(0);
             log_debug!(
-                "0 enemy_number_in_sight: {}",
-                self.game_state.get_enemy_number_in_sight()
+                "0 monster_number_in_sight: {}",
+                self.game_state.get_monster_number_in_sight()
             );
         }
     }
@@ -113,7 +113,7 @@ mod tests {
 
         // expect
         
-        // assert_eq!(bot_loop_state.game_state.get_enemy_number_in_sight(), 1);
+        // assert_eq!(bot_loop_state.game_state.get_monster_number_in_sight(), 1);
     }
 
     #[test]
@@ -144,7 +144,7 @@ mod tests {
         bot_loop_state.update_game_state_with_cells(crawl_message);
 
         // expect 
-        // assert_eq!(bot_loop_state.game_state.get_enemy_number_in_sight(), 1);
+        // assert_eq!(bot_loop_state.game_state.get_monster_number_in_sight(), 1);
     }
 
     #[test]
@@ -170,7 +170,7 @@ mod tests {
         bot_loop_state.update_game_state_with_msgs(crawl_message);
 
         // expect
-        assert_eq!(bot_loop_state.game_state.get_enemy_number_in_sight(), 1);
+        assert_eq!(bot_loop_state.game_state.get_monster_number_in_sight(), 1);
     }
 
     #[test]
@@ -191,6 +191,6 @@ mod tests {
         bot_loop_state.update_game_state_with_msgs(crawl_message);
 
         // expect
-        assert_eq!(bot_loop_state.game_state.get_enemy_number_in_sight(), 0);
+        assert_eq!(bot_loop_state.game_state.get_monster_number_in_sight(), 0);
     }
 }

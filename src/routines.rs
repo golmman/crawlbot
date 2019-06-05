@@ -36,7 +36,7 @@ pub fn supply_routine_main() -> Routine {
             InputMode::Wait => {}
         }
 
-        if game_state.get_enemy_number_in_sight() == 0 {
+        if game_state.get_monster_number_in_sight() == 0 {
             // instruction_queue.append(&mut VecDeque::from(supply_routine_explore()));
             instruction_queue.push_back(cr_out(r#"{"msg":"input","text":"o"}"#));
         } else {
@@ -44,7 +44,7 @@ pub fn supply_routine_main() -> Routine {
             instruction_queue.push_back(cr_out(r#"{"msg":"key","keycode":9}"#));
         }
 
-        // if !game_state.get_enemies_in_sight().is_empty() {
+        // if !game_state.get_monsters_in_sight().is_empty() {
         //     instruction_queue.push_back(cr_out(r#"{"msg":"input","text":"o"}"#));
         // } else {
         //     instruction_queue.push_back(cr_out(r#"{"msg":"key","keycode":9}"#));
