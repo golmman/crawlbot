@@ -1,39 +1,43 @@
 extern crate websocket;
 
 use crate::model::instruction::Instruction;
-use crate::{log_crawl, log_debug, log_info, stdin, LoopState};
+use crate::{log_crawl, log_debug, stdin, LoopState};
 use std::sync::mpsc::Sender;
 
 const KEYMAP_ARROW_UP: &str = "\u{1b}[A";
 
 fn print_help() {
-    println!("-------------------------------------------------------------------------------");
-    println!();
-    println!();
-    println!("CRAWLBOT");
-    println!();
-    println!("commands:");
-    println!("/:keypad nuumber:     take one step in that direction");
-    println!("/abandon              abandons the current game");
-    println!("/clear_routines       clears the routine queue");
-    println!("/exit");
-    println!("or /q or /quit");
-    println!("or /c or /close       sends a close message to crawl, exits crawlbot");
-    println!("/explore              auto explore - equivalent to one 'o' press");
-    println!("/fight                auto fight - equivalent to one 'tab' press");
-    println!("/get_status or /s     prints a status report");
-    println!("/idle5                lets crawlbot idle for 5 tics");
-    println!("/idle10               lets crawlbot idle for 10 tics");
-    println!("/help                 prints this help screen");
-    println!("/history or /h        prints the stdin command history");
-    println!("/pick_mifi            when a new game was started: pick mifi");
-    println!("/pick_trbe            when a new game was started: pick trbe");
-    println!("/start                starts a the game");
-    println!("/u or /unpause        un-pauses crawlbot");
-    println!("<return key>          pauses crawlbot");
-    println!();
-    println!();
-    println!("-------------------------------------------------------------------------------");
+    println!(
+        r#"
+-------------------------------------------------------------------------------
+
+
+CRAWLBOT
+
+commands:
+/:keypad nuumber:     take one step in that direction
+/abandon              abandons the current game
+/clear_routines       clears the routine queue
+/exit
+or /q or /quit
+or /c or /close       sends a close message to crawl, exits crawlbot
+/explore              auto explore - equivalent to one 'o' press
+/fight                auto fight - equivalent to one 'tab' press
+/get_status or /s     prints a status report
+/idle5                lets crawlbot idle for 5 tics
+/idle10               lets crawlbot idle for 10 tics
+/help                 prints this help screen
+/history or /h        prints the stdin command history
+/pick_mifi            when a new game was started: pick mifi
+/pick_trbe            when a new game was started: pick trbe
+/start                starts a the game
+/u or /unpause        un-pauses crawlbot
+<return key>          pauses crawlbot
+
+
+-------------------------------------------------------------------------------
+    "#
+    );
 }
 
 pub struct StdinLoopState {

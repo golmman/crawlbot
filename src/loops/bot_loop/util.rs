@@ -8,10 +8,6 @@ impl BotLoopState {
         self.primary_queue.append(&mut routine_supplier())
     }
 
-    pub fn enqueue_instruction(&mut self, instruction_supplier: fn() -> Instruction) {
-        self.primary_queue.push_back(instruction_supplier())
-    }
-
     pub fn enqueue_secondary(&mut self, routine_supplier: fn() -> Routine) {
         self.secondary_queue.append(&mut routine_supplier())
     }
