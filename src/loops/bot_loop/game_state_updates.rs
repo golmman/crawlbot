@@ -20,7 +20,7 @@ impl BotLoopState {
         for cell in cells {
             if cell["mon"].is_object() {
                 let mon: CwsMon = CwsMon::from_value(&cell["mon"]);
-        self.game_state.add_monster_in_sight(&mon);
+                self.game_state.add_monster_in_sight(&mon);
                 // log_debug!("MONSTER SIGHTED: {:?}", mon);
             }
 
@@ -112,7 +112,7 @@ mod tests {
         bot_loop_state.update_game_state_with_cells(crawl_message);
 
         // expect
-        
+
         // assert_eq!(bot_loop_state.game_state.get_monster_number_in_sight(), 1);
     }
 
@@ -143,7 +143,7 @@ mod tests {
         // execute
         bot_loop_state.update_game_state_with_cells(crawl_message);
 
-        // expect 
+        // expect
         // assert_eq!(bot_loop_state.game_state.get_monster_number_in_sight(), 1);
     }
 

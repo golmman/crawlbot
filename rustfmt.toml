@@ -7,7 +7,7 @@ reorder_impl_items = true
 report_todo = "Always"
 struct_lit_single_line = false
 unstable_features = true
-use_field_init_shorthand = "true" # stringifying makes wrapping chain-method-calls
+use_field_init_shorthand = true # stringifying makes wrapping chain-method-calls
 version = "Two"
 
 # workaround for bug
