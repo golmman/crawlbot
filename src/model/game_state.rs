@@ -1,84 +1,10 @@
 use crate::model::cws::monster::Monster;
+use crate::model::game_state::input_mode::InputMode;
+use crate::model::game_state::place::Place;
 
-#[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
-pub enum Place {
-    // branches
-    Dungeon(u32),
-    Temple,
-    Lair(u32),
-    Swamp(u32),
-    Shoals(u32),
-    Snake(u32),
-    Slime(u32),
-    Orc(u32),
-    Elf(u32),
-    Vaults(u32),
-    Crypt(u32),
-    Tomb(u32),
-    Depths(u32),
-    Hell,
-    Cocytus(u32),
-    Gehenna(u32),
-    Tartarus(u32),
-    Dis(u32),
-    Abyss(u32),
-    Pandemonium(u32),
-    Zot(u32),
-
-    // portals
-    Bailey,
-    Bazaar,
-    Desolation,
-    Ice,
-    Gauntlet,
-    Ossuary,
-    Sewer,
-    Treasure,
-    Volcano,
-    Wizlab,
-    Ziggurat(u32),
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Clone, Copy)]
-pub enum InputMode {
-    // the game wants us to wait until another input_mode is sent
-    Wait = 0,
-
-    // manually attack: {"msg": "input","text": "1"}
-    // manually attack: {"msg": "input","text": "2"}
-    // manually attack: {"msg": "input","text": "4"}
-    // manually attack: {"msg": "input","text": "5"}
-    // manually attack: {"msg": "input","text": "6"}
-    // manually attack: {"msg": "input","text": "7"}
-    // manually attack: {"msg": "input","text": "8"}
-    // manually attack: {"msg": "input","text": "9"}
-    // manually attack: {"msg": "input","text": "s"}
-    Game = 1,
-
-    // there is 'more' the game wants to show us
-    // -> react with the escape-key: {"msg":"key","keycode":27}
-    More = 5,
-
-    // the game wants us to choose from several options
-    // -> react with a choice, e.g. {"msg": "input","text": "D"}
-    Choose = 7,
-
-    Unknown,
-}
-
-impl InputMode {
-    pub fn from_i64(i: i64) -> Self {
-        match i {
-            0 => InputMode::Wait,
-            1 => InputMode::Game,
-            5 => InputMode::More,
-            7 => InputMode::Choose,
-            _ => InputMode::Unknown,
-        }
-    }
-}
+pub mod input_mode;
+pub mod monster_cache;
+pub mod place;
 
 #[derive(Debug, Clone)]
 pub struct GameState {

@@ -1,6 +1,6 @@
 use crate::model::cws::message::Message;
 use crate::loops::bot_loop::BotLoopState;
-use crate::model::game_state::InputMode;
+use crate::model::game_state::input_mode::InputMode;
 use crate::{log_crawl, log_debug};
 
 impl BotLoopState {

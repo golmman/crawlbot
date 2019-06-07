@@ -1,7 +1,7 @@
 use crate::model::instruction::Instruction;
 use crate::model::instruction::CrawlScript;
 use crate::model::instruction::Routine;
-use crate::model::game_state::InputMode;
+use crate::model::game_state::input_mode::InputMode;
 use std::collections::VecDeque;
 
 fn cr_out(s: &str) -> Instruction {
