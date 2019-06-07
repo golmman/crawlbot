@@ -1,5 +1,4 @@
-use serde::Deserialize;
-use serde_json::Value;
+use crate::model::cws::monster::Monster;
 
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy)]
@@ -81,19 +80,6 @@ impl InputMode {
     }
 }
 
-#[derive(Deserialize, Debug, Clone)]
-pub struct CwsMon {
-    name: Option<String>,
-    threat: Option<i64>,
-}
-
-impl CwsMon {
-    pub fn from_value(value: &Value) -> Self {
-        let s: Self = serde_json::from_value(value.clone()).expect("value to be defined");
-        s
-    }
-}
-
 #[derive(Debug, Clone)]
 pub struct GameState {
     // control
@@ -101,7 +87,7 @@ pub struct GameState {
     idle_ticks: u32,
 
     // crawl knowledge
-    monsters_in_sight: Vec<CwsMon>,
+    monsters_in_sight: Vec<Monster>,
     monster_number_in_sight: u32,
     explored: bool,
     input_mode: InputMode,
@@ -172,16 +158,16 @@ impl GameState {
     }
 
     //
-    pub fn get_monsters_in_sight(&self) -> &Vec<CwsMon> {
+    pub fn get_monsters_in_sight(&self) -> &Vec<Monster> {
         &self.monsters_in_sight
     }
 
-    pub fn add_monster_in_sight(&mut self, monster: &CwsMon) -> &Vec<CwsMon> {
+    pub fn add_monster_in_sight(&mut self, monster: Monster) -> &Vec<Monster> {
         self.monsters_in_sight.push(monster.clone());
         &self.monsters_in_sight
     }
 
-    pub fn clear_monsters_in_sight(&mut self) -> &Vec<CwsMon> {
+    pub fn clear_monsters_in_sight(&mut self) -> &Vec<Monster> {
         self.monsters_in_sight.clear();
         &self.monsters_in_sight
     }

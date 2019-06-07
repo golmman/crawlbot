@@ -1,45 +1,34 @@
+use crate::model::cws::message::Message;
 use crate::loops::bot_loop::BotLoopState;
 use crate::model::game_state::InputMode;
-use crate::model::game_state::CwsMon;
 use crate::{log_crawl, log_debug};
-use serde_json::Value;
 
 impl BotLoopState {
-    pub fn update_input_mode(&mut self, crawl_message: Value) {
-        if let Some(m) = crawl_message["mode"].as_i64() {
-            self.game_state.set_input_mode(InputMode::from_i64(m));
+    pub fn update_input_mode(&mut self, message: Message) {
+        if let Some(mode) = message.mode {
+            self.game_state.set_input_mode(InputMode::from_i64(mode));
         }
     }
 
-    pub fn update_game_state_with_cells(&mut self, crawl_message: Value) {
-        let empty: &Vec<Value> = &Vec::new();
-        let cells = crawl_message["cells"].as_array().unwrap_or(empty);
-
-        self.game_state.clear_monsters_in_sight();
-
-        for cell in cells {
-            if cell["mon"].is_object() {
-                let mon: CwsMon = CwsMon::from_value(&cell["mon"]);
-                self.game_state.add_monster_in_sight(&mon);
-                // log_debug!("MONSTER SIGHTED: {:?}", mon);
+    pub fn update_game_state_with_cells(&mut self, message: Message) {
+        if let Some(cells) = message.cells {
+            self.game_state.clear_monsters_in_sight();
+            for cell in cells {
+                if let Some(mon) = cell.mon {
+                    self.game_state.add_monster_in_sight(mon);
+                }
             }
-
-            // plant: threat = 0
-            // yusuf: threat = 2
-
-            // done exploring!
-            // {\"msgs\":[{\"msg\":\"msgs\",\"messages\":[{\"text\":\"<lightgrey>Done exploring.<lightgrey>\",\"turn\":631,\"channel\":0}]}\n,{\"msg\":\"input_mode\",\"mode\":1}\n]}
         }
     }
 
-    pub fn update_game_state_with_msgs(&mut self, crawl_message: Value) {
-        let empty: &Vec<Value> = &Vec::new();
-        let messages = crawl_message["messages"].as_array().unwrap_or(empty);
-
-        for message in messages {
-            let text = message["text"].as_str().expect("text to be a string");
-            self.update_game_state_with_msgs_text(text);
-        }
+    pub fn update_game_state_with_msgs(&mut self, message: Message) {
+        if let Some(messages) = message.messages {
+            for log in messages {
+                if let Some(text) = log.text {
+                    self.update_game_state_with_msgs_text(text.as_str());
+                }
+            }
+        }   
     }
 
     pub fn update_game_state_with_msgs_text(&mut self, message_text: &str) {

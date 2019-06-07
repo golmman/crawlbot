@@ -1,3 +1,4 @@
+use crate::model::cws::message::Message;
 use crate::loops::bot_loop::BotLoopState;
 use crate::model::instruction::{CrawlScript, Instruction};
 use crate::routines::{
@@ -9,7 +10,6 @@ use crate::routines::{
     supply_routine_step_south_west, supply_routine_step_west,
 };
 use crate::{log_crawl, log_debug};
-use serde_json::Value;
 
 impl BotLoopState {
     pub fn abandon(&mut self) {
@@ -25,15 +25,15 @@ impl BotLoopState {
         self.exit_loop = true;
     }
 
-    pub fn crawl_input(&mut self, crawl_message: Value) {
-        let crawl_msg = &crawl_message["msg"];
-
-        match crawl_msg.as_str().unwrap() {
-            "map" => self.update_game_state_with_cells(crawl_message),
-            "input_mode" => self.update_input_mode(crawl_message),
-            "msgs" => self.update_game_state_with_msgs(crawl_message),
-            "ping" => self.pong(),
-            _ => {}
+    pub fn crawl_message(&mut self, message: Message) {
+        if let Some(msg) = &message.msg {
+            match msg.as_str() {
+                "map" => self.update_game_state_with_cells(message),
+                "input_mode" => self.update_input_mode(message),
+                "msgs" => self.update_game_state_with_msgs(message),
+                "ping" => self.pong(),
+                _ => {}
+            }
         }
     }
 

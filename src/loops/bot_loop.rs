@@ -57,7 +57,7 @@ impl LoopState<String, String> for BotLoopState {
             Instruction::Abandon => self.abandon(),
             Instruction::ClearRoutines => self.clear_routines(),
             Instruction::Close => self.close(),
-            Instruction::CrawlInput(crawl_message) => self.crawl_input(crawl_message),
+            Instruction::CrawlMessage(message) => self.crawl_message(message),
             Instruction::CrawlOutput(data) => self.crawl_output(data),
             Instruction::Descend => self.descend(),
             Instruction::Explore => self.explore(),

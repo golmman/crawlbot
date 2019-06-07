@@ -48,8 +48,8 @@ impl LoopState<String, String> for WriterLoopState {
             Instruction::CrawlOutput(data) => {
                 let _ = self.ws_writer.send_message(&Message::text(data));
             }
-            Instruction::CrawlInput(crawl_message) => {
-                log_warn!("CrawlInput {:?}", crawl_message);
+            Instruction::CrawlMessage(message) => {
+                log_warn!("CrawlMessage {:?}", message);
             }
             _ => {
                 log_warn!("Unknown message.");

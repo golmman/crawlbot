@@ -1,7 +1,7 @@
+use crate::model::cws::message::Message;
 use std::fmt::Formatter;
 use std::fmt::Debug;
 use std::fmt::Result;
-use serde_json::Value;
 
 use crate::model::game_state::GameState;
 use std::collections::VecDeque;
@@ -65,7 +65,7 @@ pub enum Instruction {
     Descend,
 
     // control instructions
-    CrawlInput(Value),
+    CrawlMessage(Message),
     CrawlOutput(String),
     Ping(Vec<u8>),
     Pong(Vec<u8>),
