@@ -1,9 +1,11 @@
+use std::collections::HashMap;
+use crate::model::cws::cell::Cell;
 use crate::model::cws::monster::Monster;
 use crate::model::game_state::input_mode::InputMode;
 use crate::model::game_state::place::Place;
 
 pub mod input_mode;
-pub mod monster_cache;
+pub mod cell_cache;
 pub mod place;
 
 #[derive(Debug, Clone)]
@@ -13,6 +15,7 @@ pub struct GameState {
     idle_ticks: u32,
 
     // crawl knowledge
+    cell_cache: HashMap<i64, Cell>,
     monsters_in_sight: Vec<Monster>,
     monster_number_in_sight: u32,
     explored: bool,
@@ -27,6 +30,7 @@ impl GameState {
             paused: true,
             idle_ticks: 0,
 
+            cell_cache: HashMap::new(),
             monsters_in_sight: Vec::new(),
             monster_number_in_sight: 0,
             input_mode: InputMode::Wait,

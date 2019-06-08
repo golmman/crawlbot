@@ -1,11 +1,30 @@
 use crate::model::cws::monster::Monster;
+use crate::model::cws::util::upgrade_primitive;
+use crate::model::cws::util::upgrade_struct;
+use crate::model::cws::util::Upgradable;
 use serde::Deserialize;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Debug, Clone, PartialEq)]
 pub struct Cell {
     pub x: Option<i64>,
     pub y: Option<i64>,
     pub mon: Option<Monster>,
+}
+
+impl Upgradable<Cell> for Cell {
+    fn upgrade(self, other: Cell) -> Cell {
+        Cell {
+            x: upgrade_primitive(self.x, other.x),
+            y: upgrade_primitive(self.y, other.y),
+            mon: upgrade_struct(self.mon, other.mon),
+        }
+    }
+
+    fn upgrade2(&mut self, other: &Cell) {
+        self.x = upgrade_primitive(self.x, other.x);
+        self.y = upgrade_primitive(self.y, other.y);
+        self.mon = upgrade_struct(self.mon.clone(), other.mon.clone());
+    }
 }
 
 #[cfg(test)]
@@ -25,7 +44,7 @@ mod tests {
                     "threat": 2
                 }
             }
-            "#
+            "#,
         );
 
         let cell: Cell = serde_json::from_str(&json).unwrap();
