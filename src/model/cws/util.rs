@@ -25,8 +25,8 @@ pub fn upgrade_struct<T: Upgradable<T>>(self_option: Option<T>, other_option: Op
 
 #[cfg(test)]
 mod tests {
-    use crate::model::cws::cell::Cell;
-    use crate::model::cws::monster::Monster;
+    use crate::model::cws::cell::CwsCell;
+    use crate::model::cws::mon::CwsMon;
     use super::*;
 
     #[test]
@@ -50,17 +50,17 @@ mod tests {
             "#,
         );
 
-        let mut cell_before: Cell = serde_json::from_str(&json_before).unwrap();
-        let cell_increment: Cell = serde_json::from_str(&json_increment).unwrap();
+        let mut cell_before: CwsCell = serde_json::from_str(&json_before).unwrap();
+        let cell_increment: CwsCell = serde_json::from_str(&json_increment).unwrap();
 
         cell_before.upgrade2(&cell_increment);
         assert_eq!(
             cell_before,
-            Cell {
+            CwsCell {
                 x: Some(-4),
                 y: Some(10),
                 g: None,
-                mon: Some(Monster {
+                mon: Some(CwsMon {
                     id: Some(1),
                     name: None,
                     threat: Some(2),
@@ -90,17 +90,17 @@ mod tests {
             "#,
         );
 
-        let cell_before: Cell = serde_json::from_str(&json_before).unwrap();
-        let cell_increment: Cell = serde_json::from_str(&json_increment).unwrap();
+        let cell_before: CwsCell = serde_json::from_str(&json_before).unwrap();
+        let cell_increment: CwsCell = serde_json::from_str(&json_increment).unwrap();
 
         let cell_upgraded = cell_before.upgrade(cell_increment);
         assert_eq!(
             cell_upgraded,
-            Cell {
+            CwsCell {
                 x: Some(-4),
                 y: Some(10),
                 g: None,
-                mon: Some(Monster {
+                mon: Some(CwsMon {
                     id: Some(1),
                     name: None,
                     threat: Some(2),
@@ -139,17 +139,17 @@ mod tests {
             "#,
         );
 
-        let cell_before: Cell = serde_json::from_str(&json_before).unwrap();
-        let cell_increment: Cell = serde_json::from_str(&json_increment).unwrap();
+        let cell_before: CwsCell = serde_json::from_str(&json_before).unwrap();
+        let cell_increment: CwsCell = serde_json::from_str(&json_increment).unwrap();
 
         let cell_upgraded = cell_before.upgrade(cell_increment);
         assert_eq!(
             cell_upgraded,
-            Cell {
+            CwsCell {
                 x: Some(-11),
                 y: Some(22),
                 g: None,
-                mon: Some(Monster {
+                mon: Some(CwsMon {
                     id: Some(10),
                     name: Some(String::from("upgraded")),
                     threat: Some(20),
@@ -183,17 +183,17 @@ mod tests {
             "#,
         );
 
-        let cell_before: Cell = serde_json::from_str(&json_before).unwrap();
-        let cell_increment: Cell = serde_json::from_str(&json_increment).unwrap();
+        let cell_before: CwsCell = serde_json::from_str(&json_before).unwrap();
+        let cell_increment: CwsCell = serde_json::from_str(&json_increment).unwrap();
 
         let cell_upgraded = cell_before.upgrade(cell_increment);
         assert_eq!(
             cell_upgraded,
-            Cell {
+            CwsCell {
                 x: Some(-1),
                 y: Some(22),
                 g: None,
-                mon: Some(Monster {
+                mon: Some(CwsMon {
                     id: Some(1),
                     name: Some(String::from("upgraded")),
                     threat: Some(2),
@@ -224,17 +224,17 @@ mod tests {
             "#,
         );
 
-        let cell_before: Cell = serde_json::from_str(&json_before).unwrap();
-        let cell_increment: Cell = serde_json::from_str(&json_increment).unwrap();
+        let cell_before: CwsCell = serde_json::from_str(&json_before).unwrap();
+        let cell_increment: CwsCell = serde_json::from_str(&json_increment).unwrap();
 
         let cell_upgraded = cell_before.upgrade(cell_increment);
         assert_eq!(
             cell_upgraded,
-            Cell {
+            CwsCell {
                 x: Some(-1),
                 y: Some(2),
                 g: None,
-                mon: Some(Monster {
+                mon: Some(CwsMon {
                     id: Some(1),
                     name: Some(String::from("before")),
                     threat: Some(2),

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use crate::model::cws::cell::Cell;
-use crate::model::cws::monster::Monster;
+use crate::model::cws::cell::CwsCell;
+use crate::model::cws::mon::CwsMon;
 use crate::model::game_state::input_mode::InputMode;
 use crate::model::game_state::place::Place;
 use crate::model::game_state::map::Map;
@@ -10,6 +10,7 @@ pub mod constants;
 pub mod input_mode;
 pub mod map;
 pub mod message_handler;
+pub mod monster;
 pub mod place;
 pub mod tile;
 
@@ -21,8 +22,8 @@ pub struct GameState {
 
     // crawl knowledge
     pub map: Map,
-    cell_cache: HashMap<i64, Cell>,
-    monsters_in_sight: Vec<Monster>,
+    cell_cache: HashMap<i64, CwsCell>,
+    monsters_in_sight: Vec<CwsMon>,
     monster_number_in_sight: u32,
     explored: bool,
     input_mode: InputMode,
@@ -95,16 +96,16 @@ impl GameState {
     }
 
     //
-    pub fn get_monsters_in_sight(&self) -> &Vec<Monster> {
+    pub fn get_monsters_in_sight(&self) -> &Vec<CwsMon> {
         &self.monsters_in_sight
     }
 
-    pub fn add_monster_in_sight(&mut self, monster: Monster) -> &Vec<Monster> {
+    pub fn add_monster_in_sight(&mut self, monster: CwsMon) -> &Vec<CwsMon> {
         self.monsters_in_sight.push(monster.clone());
         &self.monsters_in_sight
     }
 
-    pub fn clear_monsters_in_sight(&mut self) -> &Vec<Monster> {
+    pub fn clear_monsters_in_sight(&mut self) -> &Vec<CwsMon> {
         self.monsters_in_sight.clear();
         &self.monsters_in_sight
     }

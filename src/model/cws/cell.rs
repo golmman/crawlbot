@@ -1,18 +1,18 @@
-use crate::model::cws::monster::Monster;
+use crate::model::cws::mon::CwsMon;
 use crate::model::cws::util::upgrade_primitive;
 use crate::model::cws::util::upgrade_struct;
 use crate::model::cws::util::Upgradable;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone, PartialEq)]
-pub struct Cell {
+pub struct CwsCell {
     pub x: Option<i64>,
     pub y: Option<i64>,
     pub g: Option<String>,
-    pub mon: Option<Monster>,
+    pub mon: Option<CwsMon>,
 }
 
-impl Cell {
+impl CwsCell {
     pub fn get_location(&self) -> Option<(i64, i64)> {
         if let Some(cell_x) = self.x {
             if let Some(cell_y) = self.y {
@@ -24,9 +24,9 @@ impl Cell {
     }
 }
 
-impl Upgradable<Cell> for Cell {
-    fn upgrade(self, other: Cell) -> Cell {
-        Cell {
+impl Upgradable<CwsCell> for CwsCell {
+    fn upgrade(self, other: CwsCell) -> CwsCell {
+        CwsCell {
             x: upgrade_primitive(self.x, other.x),
             y: upgrade_primitive(self.y, other.y),
             g: upgrade_primitive(self.g, other.g),
@@ -34,7 +34,7 @@ impl Upgradable<Cell> for Cell {
         }
     }
 
-    fn upgrade2(&mut self, other: &Cell) {
+    fn upgrade2(&mut self, other: &CwsCell) {
         self.x = upgrade_primitive(self.x, other.x);
         self.y = upgrade_primitive(self.y, other.y);
         self.g = upgrade_primitive(self.g.clone(), other.g.clone());
@@ -62,7 +62,7 @@ mod tests {
             "#,
         );
 
-        let cell: Cell = serde_json::from_str(&json).unwrap();
+        let cell: CwsCell = serde_json::from_str(&json).unwrap();
 
         let mon = cell.mon.unwrap();
         assert_eq!(cell.x.unwrap(), -4);

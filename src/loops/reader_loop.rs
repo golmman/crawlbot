@@ -1,6 +1,6 @@
 extern crate websocket;
 
-use crate::model::cws::root::Root;
+use crate::model::cws::root::CwsRoot;
 use crate::model::instruction::Instruction;
 use crate::{log_crawl, log_debug, log_warn, LoopState};
 use std::fs::File;
@@ -73,7 +73,7 @@ impl LoopState<String, String> for ReaderLoopState {
             OwnedMessage::Text(data) => {
                 self.log_text_data(&data);
 
-                let root: Root = serde_json::from_str(&data).unwrap();
+                let root: CwsRoot = serde_json::from_str(&data).unwrap();
 
                 if let Some(msgs) = root.msgs {
                     for message in msgs {

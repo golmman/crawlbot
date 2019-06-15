@@ -1,4 +1,4 @@
-use crate::model::cws::cell::Cell;
+use crate::model::cws::cell::CwsCell;
 
 #[derive(Debug, Clone)]
 pub struct Tile {
@@ -12,7 +12,7 @@ impl Tile {
         }
     }
 
-    pub fn from_cell(cell: Cell) -> Self {
+    pub fn from_cell(cell: CwsCell) -> Self {
         Self {
             glyph: cell.g.unwrap_or(String::from(" ")),
         }

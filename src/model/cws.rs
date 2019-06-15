@@ -1,6 +1,6 @@
 pub mod cell;
-pub mod log;
 pub mod message;
-pub mod monster;
+pub mod msg;
+pub mod mon;
 pub mod root;
 pub mod util;

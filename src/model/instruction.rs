@@ -1,4 +1,4 @@
-use crate::model::cws::message::Message;
+use crate::model::cws::msg::CwsMsg;
 use std::fmt::Formatter;
 use std::fmt::Debug;
 use std::fmt::Result;
@@ -65,7 +65,7 @@ pub enum Instruction {
     Descend,
 
     // control instructions
-    CrawlMessage(Message),
+    CrawlMessage(CwsMsg),
     CrawlOutput(String),
     Ping(Vec<u8>),
     Pong(Vec<u8>),

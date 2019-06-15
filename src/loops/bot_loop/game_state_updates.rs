@@ -1,16 +1,16 @@
-use crate::model::cws::message::Message;
+use crate::model::cws::msg::CwsMsg;
 use crate::loops::bot_loop::BotLoopState;
 use crate::model::game_state::input_mode::InputMode;
 use crate::{log_crawl, log_debug};
 
 impl BotLoopState {
-    pub fn update_input_mode(&mut self, message: Message) {
+    pub fn update_input_mode(&mut self, message: CwsMsg) {
         if let Some(mode) = message.mode {
             self.game_state.set_input_mode(InputMode::from_i64(mode));
         }
     }
 
-    pub fn update_game_state_with_cells(&mut self, message: Message) {
+    pub fn update_game_state_with_cells(&mut self, message: CwsMsg) {
         if let Some(cells) = message.cells {
             self.game_state.clear_monsters_in_sight();
             for cell in cells {
@@ -22,7 +22,7 @@ impl BotLoopState {
         }
     }
 
-    pub fn update_game_state_with_msgs(&mut self, message: Message) {
+    pub fn update_game_state_with_msgs(&mut self, message: CwsMsg) {
         if let Some(messages) = message.messages {
             for log in messages {
                 if let Some(text) = log.text {

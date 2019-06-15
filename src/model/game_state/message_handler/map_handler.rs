@@ -1,9 +1,9 @@
-use crate::model::cws::cell::Cell;
-use crate::model::cws::message::Message;
+use crate::model::cws::cell::CwsCell;
+use crate::model::cws::msg::CwsMsg;
 use crate::model::game_state::GameState;
 
 impl GameState {
-    pub fn update_map(&mut self, map_message: Message) {
+    pub fn update_map(&mut self, map_message: CwsMsg) {
         if let Some(cells) = map_message.cells {
             if cells.len() == Self::MAP_CELLS_COUNT as usize {
                 self.update_map_tiles_full(cells);
@@ -13,7 +13,7 @@ impl GameState {
         }
     }
 
-    fn update_map_tiles_full(&mut self, cells: Vec<Cell>) {
+    fn update_map_tiles_full(&mut self, cells: Vec<CwsCell>) {
         for (index, cell) in cells.into_iter().enumerate() {
             if let Some(glyph) = cell.g {
                 if glyph == "@" {
@@ -25,7 +25,7 @@ impl GameState {
         }
     }
 
-    fn update_map_tiles_partial(&mut self, cells: Vec<Cell>) {
+    fn update_map_tiles_partial(&mut self, cells: Vec<CwsCell>) {
         let mut index = 0;
         let mut new_map_focus_index: Option<i64> = None;
 
@@ -51,7 +51,7 @@ impl GameState {
         }
     }
 
-    fn update_map_tile_glyph(&mut self, index: i64, cell: Cell) {
+    fn update_map_tile_glyph(&mut self, index: i64, cell: CwsCell) {
         if let Some(glyph) = cell.g {
             if glyph == "@" {
                 self.update_map_focus(index);
@@ -93,7 +93,7 @@ impl GameState {
 
 #[cfg(test)]
 mod tests {
-    use crate::model::cws::message::Message;
+    use crate::model::cws::msg::CwsMsg;
     use std::fs::File;
     use std::io::Read;
     use super::*;
@@ -111,9 +111,9 @@ mod tests {
         let map_message_map1_json = read_file("tests/examples/map/map1.json");
         let map_message_map2_json = read_file("tests/examples/map/map2.json");
 
-        let map_message_map0: Message = serde_json::from_str(&map_message_map0_json).unwrap();
-        let map_message_map1: Message = serde_json::from_str(&map_message_map1_json).unwrap();
-        let map_message_map2: Message = serde_json::from_str(&map_message_map2_json).unwrap();
+        let map_message_map0: CwsMsg = serde_json::from_str(&map_message_map0_json).unwrap();
+        let map_message_map1: CwsMsg = serde_json::from_str(&map_message_map1_json).unwrap();
+        let map_message_map2: CwsMsg = serde_json::from_str(&map_message_map2_json).unwrap();
 
         let mut game_state = GameState::new();
 

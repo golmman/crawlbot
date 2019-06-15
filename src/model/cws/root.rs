@@ -1,7 +1,7 @@
-use crate::model::cws::message::Message;
+use crate::model::cws::msg::CwsMsg;
 use serde::Deserialize;
 
 #[derive(Deserialize, Debug, Clone)]
-pub struct Root {
-    pub msgs: Option<Vec<Message>>,
+pub struct CwsRoot {
+    pub msgs: Option<Vec<CwsMsg>>,
 }

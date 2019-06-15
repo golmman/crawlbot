@@ -1,4 +1,4 @@
-use crate::model::cws::message::Message;
+use crate::model::cws::msg::CwsMsg;
 use crate::loops::bot_loop::BotLoopState;
 use crate::model::instruction::{CrawlScript, Instruction};
 use crate::routines::{
@@ -25,7 +25,7 @@ impl BotLoopState {
         self.exit_loop = true;
     }
 
-    pub fn crawl_message(&mut self, message: Message) {
+    pub fn crawl_message(&mut self, message: CwsMsg) {
         if let Some(msg) = &message.msg {
             match msg.as_str() {
                 "map" => self.update_game_state_with_cells(message),

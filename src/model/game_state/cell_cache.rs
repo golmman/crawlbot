@@ -1,9 +1,9 @@
-use crate::model::cws::cell::Cell;
+use crate::model::cws::cell::CwsCell;
 use crate::model::cws::util::Upgradable;
 use crate::model::game_state::GameState;
 
 impl GameState {
-    pub fn update_cell_cache(&mut self, check_cell: Cell) {
+    pub fn update_cell_cache(&mut self, check_cell: CwsCell) {
         let check_cell_backup = check_cell.clone();
         
         if let Some(mon) = check_cell.mon {
