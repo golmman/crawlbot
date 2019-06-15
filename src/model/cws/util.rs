@@ -25,9 +25,9 @@ pub fn upgrade_struct<T: Upgradable<T>>(self_option: Option<T>, other_option: Op
 
 #[cfg(test)]
 mod tests {
+    use crate::model::cws::cell::Cell;
     use crate::model::cws::monster::Monster;
     use super::*;
-    use crate::model::cws::cell::Cell;
 
     #[test]
     fn upgrade2_from_empty() {
@@ -59,6 +59,7 @@ mod tests {
             Cell {
                 x: Some(-4),
                 y: Some(10),
+                g: None,
                 mon: Some(Monster {
                     id: Some(1),
                     name: None,
@@ -98,6 +99,7 @@ mod tests {
             Cell {
                 x: Some(-4),
                 y: Some(10),
+                g: None,
                 mon: Some(Monster {
                     id: Some(1),
                     name: None,
@@ -146,6 +148,7 @@ mod tests {
             Cell {
                 x: Some(-11),
                 y: Some(22),
+                g: None,
                 mon: Some(Monster {
                     id: Some(10),
                     name: Some(String::from("upgraded")),
@@ -189,6 +192,7 @@ mod tests {
             Cell {
                 x: Some(-1),
                 y: Some(22),
+                g: None,
                 mon: Some(Monster {
                     id: Some(1),
                     name: Some(String::from("upgraded")),
@@ -229,6 +233,7 @@ mod tests {
             Cell {
                 x: Some(-1),
                 y: Some(2),
+                g: None,
                 mon: Some(Monster {
                     id: Some(1),
                     name: Some(String::from("before")),

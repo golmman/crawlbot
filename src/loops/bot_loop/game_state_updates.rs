@@ -14,8 +14,9 @@ impl BotLoopState {
         if let Some(cells) = message.cells {
             self.game_state.clear_monsters_in_sight();
             for cell in cells {
-                if let Some(mon) = cell.mon {
-                    self.game_state.add_monster_in_sight(mon);
+                if cell.mon.is_some() {
+                    // self.game_state.add_monster_in_sight(mon);
+                    self.game_state.update_cell_cache(cell);
                 }
             }
         }

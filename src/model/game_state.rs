@@ -3,10 +3,15 @@ use crate::model::cws::cell::Cell;
 use crate::model::cws::monster::Monster;
 use crate::model::game_state::input_mode::InputMode;
 use crate::model::game_state::place::Place;
+use crate::model::game_state::map::Map;
 
-pub mod input_mode;
 pub mod cell_cache;
+pub mod constants;
+pub mod input_mode;
+pub mod map;
+pub mod message_handler;
 pub mod place;
+pub mod tile;
 
 #[derive(Debug, Clone)]
 pub struct GameState {
@@ -15,6 +20,7 @@ pub struct GameState {
     idle_ticks: u32,
 
     // crawl knowledge
+    pub map: Map,
     cell_cache: HashMap<i64, Cell>,
     monsters_in_sight: Vec<Monster>,
     monster_number_in_sight: u32,
@@ -30,6 +36,7 @@ impl GameState {
             paused: true,
             idle_ticks: 0,
 
+            map: Map::new(),
             cell_cache: HashMap::new(),
             monsters_in_sight: Vec::new(),
             monster_number_in_sight: 0,

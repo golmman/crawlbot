@@ -79,9 +79,3 @@ impl Instruction {
         }
     }
 }
-
-// impl Debug for Instruction {
-//     fn fmt(&self, f: &mut Formatter) -> Result {
-//         write!(f, "Instruction")
-//     }
-// }
