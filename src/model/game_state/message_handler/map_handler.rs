@@ -1,8 +1,8 @@
 use crate::model::cws::cell::CwsCell;
 use crate::model::cws::msg::CwsMsg;
-use crate::model::game_state::GameState;
-use crate::model::game_state::monster::Monster;
 
+use crate::model::game_state::monster::Monster;
+use crate::model::game_state::GameState;
 impl GameState {
     pub fn update_map(&mut self, map_message: CwsMsg) {
         if let Some(cells) = map_message.cells {
@@ -27,7 +27,9 @@ impl GameState {
             }
 
             if let Some(mon) = cell.mon {
-                self.map.monsters_visible.push(Monster::from_cws_mon(&mon));
+                self.map
+                    .monsters_visible
+                    .insert(mon.id.unwrap(), Monster::from(index as i64, &mon));
             }
         }
     }
@@ -46,10 +48,38 @@ impl GameState {
             }
 
             if let Some(glyph) = cell.g {
-                if glyph == "@" {
-                    new_map_focus_index = Some(index);
+                match glyph.as_str() {
+                    "@" => {
+                        new_map_focus_index = Some(index);
+                    },
+                    "†" => {
+                        let mut monster_id_found = None;
+                        for monster in self.map.monsters_visible.values() {
+                            if index == monster.tile_index {
+                                monster_id_found = Some(monster.id);
+                                break;
+                            }
+                        }
+
+                        if let Some(monster_id) = monster_id_found {
+                            self.map.monsters_visible.remove(&monster_id);
+                        }
+                    },
+                    _ => {},
                 }
+
                 self.map.tiles[index as usize].glyph = glyph;
+            }
+
+            if let Some(mon) = cell.mon {
+                let monster_option = self.map.monsters_visible.get_mut(&mon.id.unwrap());
+                if let Some(monster) = monster_option {
+                    monster.update(index, &mon);
+                } else {
+                    self.map
+                        .monsters_visible
+                        .insert(mon.id.unwrap(), Monster::from(index as i64, &mon));
+                }
             }
         }
 
@@ -100,10 +130,10 @@ impl GameState {
 
 #[cfg(test)]
 mod tests {
-    use crate::model::cws::msg::CwsMsg;
+    use super::*;
     use std::fs::File;
     use std::io::Read;
-    use super::*;
+
 
     fn read_file(file_name: &str) -> String {
         let mut file = File::open(file_name).unwrap();
@@ -126,31 +156,57 @@ mod tests {
 
         let mut expected_map_focus_index: usize;
         let mut expected_rat_index: usize;
+        let rat_id = 2;
 
+        /*
+         * Update with map0 -> full map update
+         */
         game_state.update_map(map_message_map0);
         // game_state.print_map();
         expected_map_focus_index = (57 + 53 * GameState::MAP_WIDTH) as usize;
         expected_rat_index = (63 + 50 * GameState::MAP_WIDTH) as usize;
+
+        // assert cell updates
         assert_eq!("@", game_state.map.tiles[expected_map_focus_index].glyph);
         assert_eq!("r", game_state.map.tiles[expected_rat_index].glyph);
         assert_eq!((57, 53), game_state.map.focus);
 
-        println!("MONSTERS_VISIBLE {:?}", game_state.map.monsters_visible);
+        // assert monster updates
+        assert_eq!(2, game_state.map.monsters_visible.len());
+        assert_eq!(4063, game_state.map.monsters_visible.get(&rat_id).unwrap().tile_index);
 
+        /*
+         * Update with map1 -> partial map update
+         */
         game_state.update_map(map_message_map1);
         // game_state.print_map();
         expected_map_focus_index = (57 + 53 * GameState::MAP_WIDTH) as usize;
         expected_rat_index = (62 + 51 * GameState::MAP_WIDTH) as usize;
+        
+        // assert cell updates
         assert_eq!("@", game_state.map.tiles[expected_map_focus_index].glyph);
         assert_eq!("r", game_state.map.tiles[expected_rat_index].glyph);
         assert_eq!((57, 53), game_state.map.focus);
 
+        // assert monster updates
+        assert_eq!(1, game_state.map.monsters_visible.len());
+        assert_eq!(4142, game_state.map.monsters_visible.get(&rat_id).unwrap().tile_index);
+
+        /*
+         * Update with map2 -> partial map update
+         */
         game_state.update_map(map_message_map2);
         // game_state.print_map();
         expected_map_focus_index = (58 + 52 * GameState::MAP_WIDTH) as usize;
         expected_rat_index = (61 + 52 * GameState::MAP_WIDTH) as usize;
+        
+        // assert cell updates
         assert_eq!("@", game_state.map.tiles[expected_map_focus_index].glyph);
         assert_eq!("r", game_state.map.tiles[expected_rat_index].glyph);
         assert_eq!((58, 52), game_state.map.focus);
+        
+        // assert monster updates
+        assert_eq!(1, game_state.map.monsters_visible.len());
+        assert_eq!(4221, game_state.map.monsters_visible.get(&rat_id).unwrap().tile_index);
     }
 }
