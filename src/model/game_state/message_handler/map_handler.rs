@@ -1,6 +1,7 @@
 use crate::model::cws::cell::CwsCell;
 use crate::model::cws::msg::CwsMsg;
 use crate::model::game_state::GameState;
+use crate::model::game_state::monster::Monster;
 
 impl GameState {
     pub fn update_map(&mut self, map_message: CwsMsg) {
@@ -14,6 +15,8 @@ impl GameState {
     }
 
     fn update_map_tiles_full(&mut self, cells: Vec<CwsCell>) {
+        self.map.monsters_visible.clear();
+
         for (index, cell) in cells.into_iter().enumerate() {
             if let Some(glyph) = cell.g {
                 if glyph == "@" {
@@ -21,6 +24,10 @@ impl GameState {
                 }
 
                 self.map.tiles[index].glyph = glyph;
+            }
+
+            if let Some(mon) = cell.mon {
+                self.map.monsters_visible.push(Monster::from_cws_mon(&mon));
             }
         }
     }
@@ -127,6 +134,8 @@ mod tests {
         assert_eq!("@", game_state.map.tiles[expected_map_focus_index].glyph);
         assert_eq!("r", game_state.map.tiles[expected_rat_index].glyph);
         assert_eq!((57, 53), game_state.map.focus);
+
+        println!("MONSTERS_VISIBLE {:?}", game_state.map.monsters_visible);
 
         game_state.update_map(map_message_map1);
         // game_state.print_map();
