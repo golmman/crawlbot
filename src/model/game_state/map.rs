@@ -24,6 +24,7 @@ impl Debug for Map {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         writeln!(f, "Map {{")?;
         writeln!(f, "    focus: {:?},", self.focus)?;
+        writeln!(f, "    monsters_visible: {:?},", self.monsters_visible)?;
         write!(f, "}}")?;
         Ok(())
     }

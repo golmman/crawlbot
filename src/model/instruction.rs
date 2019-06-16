@@ -37,6 +37,7 @@ pub enum Instruction {
     ClearRoutines,
     Close,
     GetStatus,
+    Map,
     Nothing,
     Pause,
     Unpause,

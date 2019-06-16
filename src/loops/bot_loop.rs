@@ -66,6 +66,7 @@ impl LoopState<String, String> for BotLoopState {
             Instruction::Idle10 => self.idle10(),
             Instruction::Idle5 => self.idle5(),
             Instruction::Main => self.main(),
+            Instruction::Map => self.map(),
             Instruction::Nothing => self.nothing(),
             Instruction::Pause => self.pause(),
             Instruction::PickMiFi => self.pick_mifi(),

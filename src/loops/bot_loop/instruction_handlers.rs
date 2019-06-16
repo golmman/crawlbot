@@ -72,6 +72,12 @@ impl BotLoopState {
         self.enqueue_secondary(supply_routine_main);
     }
 
+    pub fn map(&mut self) {
+        log_debug!("----- MAP -----");
+        self.game_state.print_map();
+        log_debug!("--- END MAP ---");
+    }
+
     pub fn nothing(&mut self) {}
 
     pub fn pause(&mut self) {

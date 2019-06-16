@@ -28,6 +28,8 @@ or /c or /close       sends a close message to crawl, exits crawlbot
 /idle10               lets crawlbot idle for 10 tics
 /help                 prints this help screen
 /history or /h        prints the stdin command history
+/main                 pushes the main routine to the queue
+/map or /m            prints the map
 /pick_mifi            when a new game was started: pick mifi
 /pick_trbe            when a new game was started: pick trbe
 /start                starts a the game
@@ -96,6 +98,7 @@ impl StdinLoopState {
                 Instruction::Nothing
             }
             "/main" => Instruction::Main,
+            "/map" | "/m" => Instruction::Map,
             "/pick_mifi" => Instruction::PickMiFi,
             "/pick_trbe" => Instruction::PickTrBe,
             "/start" => Instruction::Start,
