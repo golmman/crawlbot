@@ -2,6 +2,7 @@ use crate::model::cws::cell::CwsCell;
 use crate::model::cws::util::Upgradable;
 use crate::model::game_state::GameState;
 
+// TODO: remove?
 impl GameState {
     pub fn update_cell_cache(&mut self, check_cell: CwsCell) {
         let check_cell_backup = check_cell.clone();

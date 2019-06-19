@@ -15,7 +15,7 @@ fn print_help() {
 CRAWLBOT
 
 commands:
-/:keypad nuumber:     take one step in that direction
+/:keypad number:     take one step in that direction
 /abandon              abandons the current game
 /clear_routines       clears the routine queue
 /exit

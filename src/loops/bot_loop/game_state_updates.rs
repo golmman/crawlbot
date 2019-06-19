@@ -20,6 +20,8 @@ impl BotLoopState {
         //         }
         //     }
         // }
+
+
         self.game_state.update_map(msg);
     }
 
