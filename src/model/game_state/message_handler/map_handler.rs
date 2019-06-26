@@ -51,7 +51,7 @@ impl GameState {
             if let Some(glyph) = cell.g {
                 match glyph.as_str() {
                     "@" => {}
-                    "†" | "." => {
+                    "†" | "." => { // TODO: any other tile-glyph below the corpse also qulifies...
                         for monster in self.map.monsters_visible.values() {
                             if tile_index == monster.tile_index {
                                 monster_vanish_ids.push(monster.id);

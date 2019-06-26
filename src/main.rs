@@ -17,6 +17,7 @@ mod logger;
 mod loops;
 mod model;
 mod routines;
+mod util;
 
 const CRAWL_SERVER_LOCATION: &str = "ws://localhost:8080/socket";
 

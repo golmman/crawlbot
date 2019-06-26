@@ -27,6 +27,7 @@ pub fn upgrade_struct<T: Upgradable<T>>(self_option: Option<T>, other_option: Op
 mod tests {
     use crate::model::cws::cell::CwsCell;
     use crate::model::cws::mon::CwsMon;
+    use crate::util::json_option::JsonOption;
     use super::*;
 
     #[test]
@@ -64,7 +65,8 @@ mod tests {
                     id: Some(1),
                     name: None,
                     threat: Some(2),
-                })
+                }),
+                mon2: JsonOption::Undefined,
             }
         );
     }
@@ -104,7 +106,8 @@ mod tests {
                     id: Some(1),
                     name: None,
                     threat: Some(2),
-                })
+                }),
+                mon2: JsonOption::Undefined,
             }
         );
     }
@@ -153,7 +156,8 @@ mod tests {
                     id: Some(10),
                     name: Some(String::from("upgraded")),
                     threat: Some(20),
-                })
+                }),
+                mon2: JsonOption::Undefined,
             }
         );
     }
@@ -197,7 +201,8 @@ mod tests {
                     id: Some(1),
                     name: Some(String::from("upgraded")),
                     threat: Some(2),
-                })
+                }),
+                mon2: JsonOption::Undefined,
             }
         );
     }
@@ -238,7 +243,8 @@ mod tests {
                     id: Some(1),
                     name: Some(String::from("before")),
                     threat: Some(2),
-                })
+                }),
+                mon2: JsonOption::Undefined,
             }
         );
     }
