@@ -1,7 +1,4 @@
 use crate::model::cws::mon::CwsMon;
-use crate::model::cws::util::Upgradable;
-use crate::model::cws::util::upgrade_primitive;
-use crate::model::cws::util::upgrade_struct;
 use crate::util::json_option::JsonOption;
 use serde::Deserialize;
 
@@ -24,26 +21,6 @@ impl CwsCell {
         }
 
         None
-    }
-}
-
-impl Upgradable<CwsCell> for CwsCell {
-    // TODO: remove?
-    fn upgrade(self, other: CwsCell) -> CwsCell {
-        CwsCell {
-            x: upgrade_primitive(self.x, other.x),
-            y: upgrade_primitive(self.y, other.y),
-            g: upgrade_primitive(self.g, other.g),
-            mon: upgrade_struct(self.mon, other.mon),
-            mon2: JsonOption::Undefined,
-        }
-    }
-
-    fn upgrade2(&mut self, other: &CwsCell) {
-        self.x = upgrade_primitive(self.x, other.x);
-        self.y = upgrade_primitive(self.y, other.y);
-        self.g = upgrade_primitive(self.g.clone(), other.g.clone());
-        self.mon = upgrade_struct(self.mon.clone(), other.mon.clone());
     }
 }
 
