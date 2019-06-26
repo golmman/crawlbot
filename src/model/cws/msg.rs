@@ -13,8 +13,9 @@ pub struct CwsMsg {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use crate::model::cws::mon::CwsMon;
+    use crate::util::json_option::JsonOption;
+    use super::*;
 
     #[test]
     fn deserialize_message() {
@@ -64,7 +65,7 @@ mod tests {
     }
 
     fn assert_cell(cell: CwsCell) {
-        if let Some(mon) = cell.mon {
+        if let JsonOption::Some(mon) = cell.mon {
             assert_mon(mon);
         } else {
             panic!();

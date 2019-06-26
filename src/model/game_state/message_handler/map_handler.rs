@@ -1,8 +1,9 @@
 use crate::model::cws::cell::CwsCell;
 use crate::model::cws::msg::CwsMsg;
-
-use crate::model::game_state::monster::Monster;
 use crate::model::game_state::GameState;
+use crate::model::game_state::monster::Monster;
+use crate::util::json_option::JsonOption;
+
 impl GameState {
     pub fn update_map(&mut self, map_message: CwsMsg) {
         if let Some(cells) = map_message.cells {
@@ -26,7 +27,7 @@ impl GameState {
                 self.map.tiles[tile_index].glyph = glyph;
             }
 
-            if let Some(mon) = cell.mon {
+            if let JsonOption::Some(mon) = cell.mon {
                 self.map
                     .monsters_visible
                     .insert(mon.id.unwrap(), Monster::from(tile_index as i64, &mon));
@@ -65,7 +66,7 @@ impl GameState {
                 self.map.tiles[tile_index as usize].glyph = glyph;
             }
 
-            if let Some(mon) = cell.mon {
+            if let JsonOption::Some(mon) = cell.mon {
                 let monster_option = self.map.monsters_visible.get_mut(&mon.id.unwrap());
                 if let Some(monster) = monster_option {
                     monster_update_ids.push(monster.id);
