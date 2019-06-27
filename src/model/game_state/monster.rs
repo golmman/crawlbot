@@ -1,6 +1,6 @@
 use crate::model::cws::mon::CwsMon;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Monster {
     pub id: i64,
     pub name: String,
@@ -13,7 +13,7 @@ impl Monster {
         Self {
             id: mon.id.unwrap(),
             name: mon.name.clone().unwrap(),
-            threat: mon.threat.unwrap(),
+            threat: mon.threat.unwrap_or(-1),
             tile_index,
         }
     }

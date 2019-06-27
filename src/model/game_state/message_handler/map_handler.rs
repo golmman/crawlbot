@@ -1,8 +1,10 @@
+use crate::model::cws::mon::CwsMon;
 use crate::model::cws::cell::CwsCell;
 use crate::model::cws::msg::CwsMsg;
 use crate::model::game_state::GameState;
 use crate::model::game_state::monster::Monster;
 use crate::util::json_option::JsonOption;
+use crate::{log_crawl, log_error};
 
 impl GameState {
     pub fn update_map(&mut self, map_message: CwsMsg) {
@@ -37,8 +39,7 @@ impl GameState {
 
     fn update_map_tiles_partial(&mut self, cells: Vec<CwsCell>) {
         let mut tile_index = 0;
-        let mut monster_vanish_ids: Vec<i64> = Vec::new();
-        let mut monster_update_ids: Vec<i64> = Vec::new();
+        let mut monster_cells: Vec<(i64, JsonOption<CwsMon>)> = Vec::new();
 
         for cell in cells {
             if let Some((cell_x, cell_y)) = cell.get_location() {
@@ -50,52 +51,74 @@ impl GameState {
             }
 
             if let Some(glyph) = cell.g {
-                match glyph.as_str() {
-                    "@" => {}
-                    "†" | "." => { // TODO: any other tile-glyph below the corpse also qulifies...
-                        for monster in self.map.monsters_visible.values() {
-                            if tile_index == monster.tile_index {
-                                monster_vanish_ids.push(monster.id);
-                                break;
-                            }
-                        }
-                    }
-                    _ => {}
-                }
-
                 self.map.tiles[tile_index as usize].glyph = glyph;
             }
 
-            if let JsonOption::Some(mon) = cell.mon {
-                let monster_option = self.map.monsters_visible.get_mut(&mon.id.unwrap());
-                if let Some(monster) = monster_option {
-                    monster_update_ids.push(monster.id);
-                    monster.update(tile_index, &mon);
+            if cell.mon.is_defined() {
+                monster_cells.push((tile_index, cell.mon));
+            }
+        }
+
+        self.remove_visible_monsters_by_cellinfo(&monster_cells);
+        self.upsert_visible_monsters_by_cellinfo(&monster_cells);
+    }
+
+    // TODO: reduce complexity
+    fn remove_visible_monsters_by_cellinfo(&mut self, monster_cells: &[(i64, JsonOption<CwsMon>)]) {
+        for (tile_index, mon) in monster_cells {
+            if mon.is_null() {
+                // find mon id in monsters_visible map
+                let mut mon_id_option: Option<i64> = None;
+                for monster_visible in self.map.monsters_visible.values() {
+                    if monster_visible.tile_index == *tile_index {
+                        mon_id_option = Some(monster_visible.id);
+                    }
+                }
+
+                if let Some(mon_id) = mon_id_option {
+                    let mut is_remove = true;
+
+                    for (_, mon_option) in monster_cells {
+                        if let JsonOption::Some(mon2) = mon_option {
+                            if let Some(mon2_id) = mon2.id {
+                                if mon2_id == mon_id {
+                                    is_remove = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if is_remove {
+                        // remove
+                        self.map.monsters_visible.remove(&mon_id);
+                    }
                 } else {
+                    log_error!("(tile_index, mon): ({:?}, {:?})", tile_index, mon);
+                    log_error!("monsters_visible: {:?}", self.map.monsters_visible);
+                    panic!("Tried to remove a monster which was not yet created.");
+                }
+            }
+        }
+    }
+
+    fn upsert_visible_monsters_by_cellinfo(&mut self, monster_cells: &[(i64, JsonOption<CwsMon>)]) {
+        for (tile_index, mon_option) in monster_cells {
+            if let JsonOption::Some(mon) = mon_option {
+                let mon_id = mon.id.unwrap();
+                if let Some(monster_visible) = self.map.monsters_visible.get_mut(&mon_id) {
+                    // update
+                    monster_visible.update(*tile_index, &mon);
+                } else {
+                    // create
                     self.map
                         .monsters_visible
-                        .insert(mon.id.unwrap(), Monster::from(tile_index as i64, &mon));
+                        .insert(mon_id, Monster::from(*tile_index, &mon));
                 }
             }
         }
-
-        self.update_monster_deaths(&monster_update_ids, &monster_vanish_ids);
     }
 
-    fn update_monster_deaths(&mut self, monster_update_ids: &[i64], monster_vanish_ids: &[i64]) {
-        for vanished_id in monster_vanish_ids {
-            let mut vanished_not_updated = true;
-            for updated_id in monster_update_ids {
-                if vanished_id == updated_id {
-                    vanished_not_updated = false;
-                }
-            }
-
-            if vanished_not_updated {
-                self.map.monsters_visible.remove(&vanished_id);
-            }
-        }
-    }
 
     fn update_map_focus(&mut self, index: i64) {
         self.map.focus = (index % Self::MAP_WIDTH, index / Self::MAP_WIDTH);
@@ -141,8 +164,7 @@ mod tests {
         contents
     }
 
-    #[test]
-    fn update_monster_deaths() {
+    fn generate_game_state_with_monsters_visible() -> GameState {
         let mut game_state = GameState::new();
         game_state.map.monsters_visible.insert(
             1,
@@ -150,7 +172,7 @@ mod tests {
                 id: 1,
                 name: String::from("monster1"),
                 threat: 0,
-                tile_index: 0,
+                tile_index: 10,
             },
         );
         game_state.map.monsters_visible.insert(
@@ -159,7 +181,7 @@ mod tests {
                 id: 2,
                 name: String::from("monster2"),
                 threat: 0,
-                tile_index: 0,
+                tile_index: 20,
             },
         );
         game_state.map.monsters_visible.insert(
@@ -168,7 +190,7 @@ mod tests {
                 id: 3,
                 name: String::from("monster3"),
                 threat: 0,
-                tile_index: 0,
+                tile_index: 30,
             },
         );
         game_state.map.monsters_visible.insert(
@@ -177,21 +199,92 @@ mod tests {
                 id: 4,
                 name: String::from("monster4"),
                 threat: 0,
-                tile_index: 0,
+                tile_index: 40,
             },
         );
 
-        let monster_vanish_ids = vec![1, 2, 3];
-        let monster_update_ids = vec![2, 4];
+        game_state
+    }
 
-        game_state.update_monster_deaths(&monster_update_ids, &monster_vanish_ids);
+    fn generate_monster_cells() -> Vec<(i64, JsonOption<CwsMon>)> {
+        // let monster_cells: &[(i64, &JsonOption<CwsMon>)]
+        let monster_cells: Vec<(i64, JsonOption<CwsMon>)> = vec![
+            // monster1 moves, and should not be removed
+            (10, JsonOption::Null),
+            (
+                20,
+                JsonOption::Some(CwsMon {
+                    id: Some(1),
+                    name: Some(String::from("Stephen")),
+                    threat: None,
+                }),
+            ),
+            // monster2 vanishes and should be remove
+            (20, JsonOption::Null),
+
+            // monster3 vanishes and should be removed
+            (30, JsonOption::Null),
+
+            // monster5 is create
+            (
+                50,
+                JsonOption::Some(CwsMon {
+                    id: Some(5),
+                    name: Some(String::from("monster5")),
+                    threat: Some(2),
+                }),
+            ),
+        ];
+
+        monster_cells
+    }
+
+    #[test]
+    fn remove_visible_monsters_by_cellinfo() {
+        let mut game_state = generate_game_state_with_monsters_visible();
+
+        let monster_cells_tmp = generate_monster_cells();
+
+        game_state.remove_visible_monsters_by_cellinfo(&monster_cells_tmp);
 
         let mv = &game_state.map.monsters_visible;
         assert_eq!(2, mv.len());
-        assert!(mv.contains_key(&2));
+        assert!(mv.contains_key(&1));
         assert!(mv.contains_key(&4));
     }
 
+    #[test]
+    fn upsert_visible_monsters_by_cellinfo() {
+        let mut game_state = generate_game_state_with_monsters_visible();
+
+        let monster_cells = generate_monster_cells();
+
+        game_state.upsert_visible_monsters_by_cellinfo(&monster_cells);
+
+        let mv = &game_state.map.monsters_visible;
+
+        assert_eq!(5, mv.len());
+        assert_eq!(
+            Some(&Monster {
+                id: 1,
+                name: "Stephen".to_string(),
+                threat: 0,
+                tile_index: 20
+            }),
+            mv.get(&1)
+        );
+        assert_eq!(
+            Some(&Monster {
+                id: 5,
+                name: "monster5".to_string(),
+                threat: 2,
+                tile_index: 50
+            }),
+            mv.get(&5)
+        );
+    }
+
+    // TODO: prepare, execute, expect
     #[allow(clippy::cognitive_complexity)]
     #[test]
     fn update_map2() {

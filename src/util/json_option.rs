@@ -10,6 +10,22 @@ pub enum JsonOption<T> {
     Some(T),
 }
 
+impl<T> JsonOption<T> {
+    pub fn is_defined(&self) -> bool {
+        match self {
+            JsonOption::Undefined => false,
+            _ => true,
+        }
+    }
+
+    pub fn is_null(&self) -> bool {
+        match self {
+            JsonOption::Null => true,
+            _ => false,
+        }
+    }
+}
+
 impl<T> Default for JsonOption<T> {
     fn default() -> Self {
         JsonOption::Undefined

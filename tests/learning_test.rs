@@ -18,6 +18,8 @@ struct Msgs {
     msgs: Vec<Msg>,
 }
 
+// TODO: cleanup tests, replace logs by asserts
+
 #[test]
 fn summation() {
     assert_eq!(1 + 2, 3);

@@ -6,6 +6,7 @@ use std::fmt::Debug;
 #[derive(Clone)]
 pub struct Map {
     pub focus: (i64, i64),
+    // TODO: refactor to a simple array with e.g. 256 elements
     pub monsters_visible: HashMap<i64, Monster>,
     pub tiles: Vec<Tile>,
 }
