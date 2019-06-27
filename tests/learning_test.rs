@@ -1,6 +1,4 @@
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use std::collections::VecDeque;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Person {
@@ -17,8 +15,6 @@ struct Msg {
 struct Msgs {
     msgs: Vec<Msg>,
 }
-
-// TODO: cleanup tests, replace logs by asserts
 
 #[test]
 fn summation() {
@@ -96,70 +92,4 @@ fn json_deserialize() {
 
     assert_eq!(object.age, 100);
     assert_eq!(object.name, "dirk");
-}
-
-#[test]
-fn json_deserialize2() {
-    let object: Msgs = serde_json::from_str(
-        "{\"msgs\":[{\"msg\": \"lobby_clear\"},{\"msg\": \"lobby_complete\"}]}",
-    )
-    .unwrap();
-
-    println!("{:?}", object);
-}
-
-#[test]
-fn json_deserialize3() {
-    let data = r#"
-        {
-            "name": "John Doe",
-            "age": 43,
-            "phones": [
-                "+44 1234567",
-                "+44 2345678"
-            ],
-            "subobject": {
-                "test": 12,
-                "aaa": "dasdas"
-            }
-        }"#;
-
-    let mut v: Value = serde_json::from_str(data).unwrap();
-
-    // Access parts of the data by indexing with square brackets.
-    println!("Please call {} at the number {}", v["name"], v["phones"][0]);
-    println!("dasdasd {}", v["subobject"]["aaa"]);
-    println!("dasdasd {}", v["subobject"]["hjjj"]);
-
-    for s in v["phones"].as_array().unwrap() {
-        println!("{}", s);
-    }
-
-    println!("-----------------");
-
-
-    let vv = v["phones"].as_array_mut().unwrap();
-    while !vv.is_empty() {
-        println!("{}", vv.remove(0));
-    }
-
-}
-
-// #[derive(Debug)]
-// enum TestEnum {
-//     Test2 = vec![1, 2]
-// }
-
-#[test]
-fn fmt() {
-    println!("{:.5} TEST", "HelloWorld");
-    println!("{:5.5} TEST", "HelloWorld");
-    println!("{:5.5} TEST", "HW");
-}
-
-#[test]
-fn str_contains() {
-    let x = "<lightred>A kobold is nearby!";
-
-    assert!(x.contains("<lightred>"))
 }

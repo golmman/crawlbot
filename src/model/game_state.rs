@@ -24,11 +24,6 @@ pub struct GameState {
     explored: bool,
     input_mode: InputMode,
     place: Place,
-
-    // TODO: deprecated
-    cell_cache: HashMap<i64, CwsCell>,
-    monsters_in_sight: Vec<CwsMon>,
-    monster_number_in_sight: u32,
 }
 
 #[allow(dead_code)]
@@ -42,10 +37,6 @@ impl GameState {
             input_mode: InputMode::Wait,
             explored: false,
             place: Place::Dungeon(1),
-
-            cell_cache: HashMap::new(),
-            monsters_in_sight: Vec::new(),
-            monster_number_in_sight: 0,
         }
     }
 
@@ -98,36 +89,6 @@ impl GameState {
     }
 
     //
-    pub fn get_monsters_in_sight(&self) -> &Vec<CwsMon> {
-        &self.monsters_in_sight
-    }
-
-    pub fn add_monster_in_sight(&mut self, monster: CwsMon) -> &Vec<CwsMon> {
-        self.monsters_in_sight.push(monster.clone());
-        &self.monsters_in_sight
-    }
-
-    pub fn clear_monsters_in_sight(&mut self) -> &Vec<CwsMon> {
-        self.monsters_in_sight.clear();
-        &self.monsters_in_sight
-    }
-
-    pub fn get_monster_number_in_sight(&self) -> u32 {
-        self.monster_number_in_sight
-    }
-
-    pub fn set_monster_number_in_sight(&mut self, n: u32) {
-        self.monster_number_in_sight = n;
-    }
-
-    pub fn dec_monster_number_in_sight(&mut self) {
-        self.monster_number_in_sight -= 1;
-    }
-
-    pub fn inc_monster_number_in_sight(&mut self) {
-        self.monster_number_in_sight += 1;
-    }
-
     pub fn get_input_mode(&self) -> InputMode {
         self.input_mode
     }
