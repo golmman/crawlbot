@@ -6,6 +6,9 @@ use crate::model::game_state::monster::Monster;
 use crate::util::json_option::JsonOption;
 use crate::{log_crawl, log_error};
 
+#[cfg(test)]
+mod itests;
+
 impl GameState {
     pub fn update_map(&mut self, map_message: CwsMsg) {
         if let Some(cells) = map_message.cells {
@@ -153,16 +156,6 @@ impl GameState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::File;
-    use std::io::Read;
-
-
-    fn read_file(file_name: &str) -> String {
-        let mut file = File::open(file_name).unwrap();
-        let mut contents = String::new();
-        file.read_to_string(&mut contents).unwrap();
-        contents
-    }
 
     fn generate_game_state_with_monsters_visible() -> GameState {
         let mut game_state = GameState::new();
@@ -208,7 +201,6 @@ mod tests {
     }
 
     fn generate_monster_cells() -> Vec<(i64, JsonOption<CwsMon>)> {
-        // let monster_cells: &[(i64, &JsonOption<CwsMon>)]
         let monster_cells: Vec<(i64, JsonOption<CwsMon>)> = vec![
             // monster1 moves, and should not be removed
             (10, JsonOption::Null),
@@ -283,151 +275,5 @@ mod tests {
             }),
             mv.get(&5)
         );
-    }
-
-    // TODO: prepare, execute, expect
-    #[allow(clippy::cognitive_complexity)]
-    #[test]
-    fn update_map2() {
-        let map_message_map0_json = read_file("tests/examples/maps1/map0.json");
-        let map_message_map1_json = read_file("tests/examples/maps1/map1.json");
-        let map_message_map2_json = read_file("tests/examples/maps1/map2.json");
-        let map_message_map3_json = read_file("tests/examples/maps1/map3.json");
-        let map_message_map4_json = read_file("tests/examples/maps1/map4.json");
-        let map_message_map5_json = read_file("tests/examples/maps1/map5.json");
-
-        let map_message_map0: CwsMsg = serde_json::from_str(&map_message_map0_json).unwrap();
-        let map_message_map1: CwsMsg = serde_json::from_str(&map_message_map1_json).unwrap();
-        let map_message_map2: CwsMsg = serde_json::from_str(&map_message_map2_json).unwrap();
-        let map_message_map3: CwsMsg = serde_json::from_str(&map_message_map3_json).unwrap();
-        let map_message_map4: CwsMsg = serde_json::from_str(&map_message_map4_json).unwrap();
-        let map_message_map5: CwsMsg = serde_json::from_str(&map_message_map5_json).unwrap();
-
-        let mut game_state = GameState::new();
-
-        let lizard_id = 1;
-        let goblin_id = 2;
-
-        game_state.update_map(map_message_map0);
-        assert_eq!((20, 18), game_state.map.focus);
-        assert_eq!("@", game_state.map.tiles[get_tile_index(20, 18)].glyph);
-        assert_eq!("l", game_state.map.tiles[get_tile_index(17, 18)].glyph);
-        assert_eq!("g", game_state.map.tiles[get_tile_index(18, 16)].glyph);
-        assert_eq!(2, game_state.map.monsters_visible.len());
-        assert_eq!(
-            get_tile_index(17, 18) as i64,
-            game_state.map.monsters_visible.get(&lizard_id).unwrap().tile_index
-        );
-        assert_eq!(
-            get_tile_index(18, 16) as i64,
-            game_state.map.monsters_visible.get(&goblin_id).unwrap().tile_index
-        );
-
-        game_state.update_map(map_message_map1);
-        assert_eq!("@", game_state.map.tiles[get_tile_index(19, 17)].glyph);
-        assert_eq!("l", game_state.map.tiles[get_tile_index(18, 17)].glyph);
-        assert_eq!("g", game_state.map.tiles[get_tile_index(18, 16)].glyph);
-        assert_eq!(2, game_state.map.monsters_visible.len());
-        assert_eq!(
-            get_tile_index(18, 17) as i64,
-            game_state.map.monsters_visible.get(&lizard_id).unwrap().tile_index
-        );
-        assert_eq!(
-            get_tile_index(18, 16) as i64,
-            game_state.map.monsters_visible.get(&goblin_id).unwrap().tile_index
-        );
-
-        game_state.update_map(map_message_map2);
-        assert_eq!("@", game_state.map.tiles[get_tile_index(19, 17)].glyph);
-        assert_eq!("l", game_state.map.tiles[get_tile_index(18, 17)].glyph);
-        assert_eq!(".", game_state.map.tiles[get_tile_index(18, 16)].glyph);
-        assert_eq!(1, game_state.map.monsters_visible.len());
-        assert_eq!(
-            get_tile_index(18, 17) as i64,
-            game_state.map.monsters_visible.get(&lizard_id).unwrap().tile_index
-        );
-
-        game_state.update_map(map_message_map3);
-        assert_eq!("@", game_state.map.tiles[get_tile_index(19, 17)].glyph);
-        assert_eq!("†", game_state.map.tiles[get_tile_index(18, 17)].glyph);
-        assert_eq!(0, game_state.map.monsters_visible.len());
-
-        game_state.update_map(map_message_map4);
-        assert_eq!("@", game_state.map.tiles[get_tile_index(18, 16)].glyph);
-        assert_eq!(0, game_state.map.monsters_visible.len());
-
-        game_state.update_map(map_message_map5);
-        assert_eq!("@", game_state.map.tiles[get_tile_index(19, 15)].glyph);
-        assert_eq!(0, game_state.map.monsters_visible.len());
-    }
-
-    #[test]
-    fn update_map1() {
-        let map_message_map0_json = read_file("tests/examples/maps0/map0.json");
-        let map_message_map1_json = read_file("tests/examples/maps0/map1.json");
-        let map_message_map2_json = read_file("tests/examples/maps0/map2.json");
-
-        let map_message_map0: CwsMsg = serde_json::from_str(&map_message_map0_json).unwrap();
-        let map_message_map1: CwsMsg = serde_json::from_str(&map_message_map1_json).unwrap();
-        let map_message_map2: CwsMsg = serde_json::from_str(&map_message_map2_json).unwrap();
-
-        let mut game_state = GameState::new();
-
-        let rat_id = 2;
-
-        /*
-         * Update with map0 -> full map update
-         */
-        game_state.update_map(map_message_map0);
-
-        // assert cell updates
-        assert_eq!("@", game_state.map.tiles[get_tile_index(57, 53)].glyph);
-        assert_eq!("r", game_state.map.tiles[get_tile_index(63, 50)].glyph);
-        assert_eq!((57, 53), game_state.map.focus);
-
-        // assert monster updates
-        assert_eq!(2, game_state.map.monsters_visible.len());
-        assert_eq!(
-            get_tile_index(63, 50) as i64,
-            game_state.map.monsters_visible.get(&rat_id).unwrap().tile_index
-        );
-
-        /*
-         * Update with map1 -> partial map update
-         */
-        game_state.update_map(map_message_map1);
-
-        // assert cell updates
-        assert_eq!("@", game_state.map.tiles[get_tile_index(57, 53)].glyph);
-        assert_eq!("r", game_state.map.tiles[get_tile_index(62, 51)].glyph);
-        assert_eq!((57, 53), game_state.map.focus);
-
-        // assert monster updates
-        assert_eq!(1, game_state.map.monsters_visible.len());
-        assert_eq!(
-            get_tile_index(62, 51) as i64,
-            game_state.map.monsters_visible.get(&rat_id).unwrap().tile_index
-        );
-
-        /*
-         * Update with map2 -> partial map update
-         */
-        game_state.update_map(map_message_map2);
-
-        // assert cell updates
-        assert_eq!("@", game_state.map.tiles[get_tile_index(58, 52)].glyph);
-        assert_eq!("r", game_state.map.tiles[get_tile_index(61, 52)].glyph);
-        assert_eq!((57, 53), game_state.map.focus);
-
-        // assert monster updates
-        assert_eq!(1, game_state.map.monsters_visible.len());
-        assert_eq!(
-            get_tile_index(61, 52) as i64,
-            game_state.map.monsters_visible.get(&rat_id).unwrap().tile_index
-        );
-    }
-
-    fn get_tile_index(x: i64, y: i64) -> usize {
-        (x + y * GameState::MAP_WIDTH) as usize
     }
 }
