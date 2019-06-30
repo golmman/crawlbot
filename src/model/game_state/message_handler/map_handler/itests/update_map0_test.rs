@@ -56,9 +56,9 @@ fn assert_map2(game_state: &mut GameState, map: CwsMsg) {
 fn update_map0() {
     let mut game_state = GameState::new();
 
-    let map_message_map0: CwsMsg = prepare_cws_msg("tests/examples/maps0/map0.json");
-    let map_message_map1: CwsMsg = prepare_cws_msg("tests/examples/maps0/map1.json");
-    let map_message_map2: CwsMsg = prepare_cws_msg("tests/examples/maps0/map2.json");
+    let map_message_map0: CwsMsg = prepare_cws_msg("tests/examples/maps0/root0.json");
+    let map_message_map1: CwsMsg = prepare_cws_msg("tests/examples/maps0/root1.json");
+    let map_message_map2: CwsMsg = prepare_cws_msg("tests/examples/maps0/root2.json");
 
     assert_map0(&mut game_state, map_message_map0);
     assert_map1(&mut game_state, map_message_map1);

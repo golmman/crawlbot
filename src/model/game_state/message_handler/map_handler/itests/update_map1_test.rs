@@ -74,12 +74,12 @@ fn assert_map5(game_state: &mut GameState, map: CwsMsg) {
 fn update_map1() {
     let mut game_state = GameState::new();
 
-    let map_message_map0: CwsMsg = prepare_cws_msg("tests/examples/maps1/map0.json");
-    let map_message_map1: CwsMsg = prepare_cws_msg("tests/examples/maps1/map1.json");
-    let map_message_map2: CwsMsg = prepare_cws_msg("tests/examples/maps1/map2.json");
-    let map_message_map3: CwsMsg = prepare_cws_msg("tests/examples/maps1/map3.json");
-    let map_message_map4: CwsMsg = prepare_cws_msg("tests/examples/maps1/map4.json");
-    let map_message_map5: CwsMsg = prepare_cws_msg("tests/examples/maps1/map5.json");
+    let map_message_map0: CwsMsg = prepare_cws_msg("tests/examples/maps1/root0.json");
+    let map_message_map1: CwsMsg = prepare_cws_msg("tests/examples/maps1/root1.json");
+    let map_message_map2: CwsMsg = prepare_cws_msg("tests/examples/maps1/root2.json");
+    let map_message_map3: CwsMsg = prepare_cws_msg("tests/examples/maps1/root3.json");
+    let map_message_map4: CwsMsg = prepare_cws_msg("tests/examples/maps1/root4.json");
+    let map_message_map5: CwsMsg = prepare_cws_msg("tests/examples/maps1/root5.json");
 
     assert_map0(&mut game_state, map_message_map0);
     assert_map1(&mut game_state, map_message_map1);

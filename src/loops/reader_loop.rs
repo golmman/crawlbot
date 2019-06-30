@@ -63,7 +63,7 @@ impl LoopState<String, String> for ReaderLoopState {
             OwnedMessage::Close(_) => {
                 let _ = self.sender.send(Instruction::Close);
                 return Err(String::from("Exiting reader_loop..."));
-            }
+            },
             OwnedMessage::Ping(data) => match self.sender.send(Instruction::Ping(data)) {
                 Ok(()) => (),
                 Err(_) => {
@@ -80,10 +80,10 @@ impl LoopState<String, String> for ReaderLoopState {
                         let _ = self.sender.send(Instruction::CrawlMessage(message));
                     }
                 }
-            }
+            },
             _ => {
                 log_warn!("Unknown message.");
-            }
+            },
         }
 
         Ok(String::from(""))

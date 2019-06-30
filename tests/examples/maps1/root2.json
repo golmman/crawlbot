@@ -1,0 +1,209 @@
+{
+    "msgs": [
+        {
+            "msg": "input_mode",
+            "mode": 0
+        },
+        {
+            "msg": "player",
+            "hp": 35,
+            "poison_survival": 35,
+            "progress": 53,
+            "time": 9528,
+            "turn": 957
+        },
+        {
+            "msg": "msgs",
+            "messages": [
+                {
+                    "text": "<lightgrey>You claw the goblin!<lightgrey>",
+                    "turn": 956,
+                    "channel": 0
+                },
+                {
+                    "text": "<red>You kill the goblin!<lightgrey>",
+                    "turn": 956,
+                    "channel": 18
+                },
+                {
+                    "text": "<lightred>Trog accepts your kill.<lightgrey>",
+                    "turn": 956,
+                    "channel": 3
+                },
+                {
+                    "text": "<lightgrey>The frilled lizard bites you.<lightgrey>",
+                    "turn": 956,
+                    "channel": 0
+                }
+            ]
+        },
+        {
+            "msg": "map",
+            "cells": [
+                {
+                    "x": 2,
+                    "y": -8,
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "x": 7,
+                    "y": -8,
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "x": 2,
+                    "y": -7,
+                    "mf": 26
+                },
+                {
+                    "x": 6,
+                    "y": -7,
+                    "mf": 26
+                },
+                {
+                    "x": 9,
+                    "y": -7,
+                    "mf": 26
+                },
+                {
+                    "x": 2,
+                    "y": -6,
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": -6,
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "x": 2,
+                    "y": -5,
+                    "mf": 26
+                },
+                {
+                    "x": -1,
+                    "y": -4,
+                    "mf": 26
+                },
+                {
+                    "x": 1,
+                    "y": -4,
+                    "mf": 26
+                },
+                {
+                    "x": -9,
+                    "y": -3,
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "x": -1,
+                    "y": -3,
+                    "mf": 26
+                },
+                {
+                    "x": 1,
+                    "y": -3,
+                    "mf": 26
+                },
+                {
+                    "x": -9,
+                    "y": -2,
+                    "mf": 26
+                },
+                {
+                    "x": -2,
+                    "y": -2,
+                    "mon": null,
+                    "g": ".",
+                    "t": {
+                        "fg": 0,
+                        "doll": null,
+                        "mcache": null
+                    }
+                },
+                {
+                    "x": -9,
+                    "y": -1,
+                    "mf": 26
+                },
+                {
+                    "x": -9,
+                    "y": 0,
+                    "mf": 26
+                },
+                {
+                    "x": -9,
+                    "y": 1,
+                    "mf": 26
+                },
+                {
+                    "x": -9,
+                    "y": 2,
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "x": -5,
+                    "y": 2,
+                    "mf": 26
+                },
+                {
+                    "x": -4,
+                    "y": 5,
+                    "mf": 26
+                },
+                {
+                    "x": -4,
+                    "y": 6,
+                    "mf": 26
+                },
+                {
+                    "x": -4,
+                    "y": 7,
+                    "mf": 26
+                },
+                {
+                    "x": 12,
+                    "y": 7,
+                    "mf": 26
+                }
+            ]
+        },
+        {
+            "msg": "input_mode",
+            "mode": 1
+        }
+    ]
+}
