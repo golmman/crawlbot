@@ -1,0 +1,255 @@
+{
+    "msgs": [
+        {
+            "msg": "input_mode",
+            "mode": 0
+        },
+        {
+            "msg": "player",
+            "progress": 80,
+            "time": 13008,
+            "turn": 1306,
+            "status": [
+                {
+                    "light": "Starving",
+                    "text": "starving",
+                    "col": 12
+                }
+            ]
+        },
+        {
+            "msg": "msgs",
+            "messages": [
+                {
+                    "text": "<lightgrey>You scratch the frilled lizard.<lightgrey>",
+                    "turn": 1305,
+                    "channel": 0
+                },
+                {
+                    "text": "<red>You kill the frilled lizard!<lightgrey>",
+                    "turn": 1305,
+                    "channel": 18
+                },
+                {
+                    "text": "<lightred>Trog accepts your kill.<lightgrey>",
+                    "turn": 1305,
+                    "channel": 3
+                },
+                {
+                    "text": "<yellow>You are starving!<lightgrey>",
+                    "turn": 1305,
+                    "channel": 7
+                },
+                {
+                    "text": "<lightgrey>The gnoll hits you but does no damage.<lightgrey> x2",
+                    "turn": 1305,
+                    "channel": 0
+                }
+            ]
+        },
+        {
+            "msg": "map",
+            "cells": [
+                {
+                    "x": -7,
+                    "y": -10,
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "x": -7,
+                    "y": -9,
+                    "mf": 26
+                },
+                {
+                    "x": 2,
+                    "y": -9,
+                    "mf": 26
+                },
+                {
+                    "x": -4,
+                    "y": -8,
+                    "mf": 26
+                },
+                {
+                    "x": 1,
+                    "y": -8,
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "x": -4,
+                    "y": -7,
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": -7,
+                    "mf": 26
+                },
+                {
+                    "x": -4,
+                    "y": -6,
+                    "mf": 26
+                },
+                {
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": -6,
+                    "mf": 26
+                },
+                {
+                    "x": -3,
+                    "y": -5,
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": -5,
+                    "mf": 26
+                },
+                {
+                    "x": -3,
+                    "y": -4,
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": -4,
+                    "mf": 26
+                },
+                {
+                    "x": -1,
+                    "y": -3,
+                    "mon": null,
+                    "mf": 6,
+                    "g": "†",
+                    "t": {
+                        "fg": 941,
+                        "base": 0,
+                        "bg": 1048579,
+                        "doll": null,
+                        "mcache": null
+                    }
+                },
+                {
+                    "x": 8,
+                    "y": -3,
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": -2,
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": -1,
+                    "mf": 26
+                },
+                {
+                    "x": 0,
+                    "y": 0,
+                    "t": {
+                        "fg": 3258,
+                        "doll": [],
+                        "mcache": [
+                            [
+                                2983,
+                                0,
+                                0
+                            ],
+                            [
+                                3805,
+                                -1,
+                                0
+                            ]
+                        ]
+                    }
+                },
+                {
+                    "x": 8,
+                    "y": 0,
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": 1,
+                    "mf": 26
+                },
+                {
+                    "x": -12,
+                    "y": 2,
+                    "col": 4
+                },
+                {
+                    "x": 8,
+                    "y": 2,
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": 3,
+                    "mf": 26
+                },
+                {
+                    "x": 8,
+                    "y": 4,
+                    "mf": 26
+                }
+            ]
+        },
+        {
+            "msg": "input_mode",
+            "mode": 1
+        }
+    ]
+}

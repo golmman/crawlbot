@@ -26,14 +26,14 @@ impl BotLoopState {
     }
 
     pub fn crawl_message(&mut self, message: CwsMsg) {
-        if let Some(msg) = &message.msg {
-            match msg.as_str() {
-                "map" => self.update_game_state_with_cells(message),
-                "input_mode" => self.update_input_mode(message),
-                "msgs" => self.update_game_state_with_msgs(message),
+        if let Some(message_type) = &message.msg {
+            match message_type.as_str() {
+                "map" => self.game_state.update_map(message),
+                "input_mode" => self.game_state.update_input_mode(message),
+                "msgs" => self.game_state.update_game_state_with_msgs(message),
                 "ping" => self.pong(),
                 _ => {}
-            }
+            };
         }
     }
 

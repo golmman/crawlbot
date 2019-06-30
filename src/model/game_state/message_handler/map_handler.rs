@@ -166,6 +166,7 @@ mod tests {
 
     fn generate_game_state_with_monsters_visible() -> GameState {
         let mut game_state = GameState::new();
+        
         game_state.map.monsters_visible.insert(
             1,
             Monster {
