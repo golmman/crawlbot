@@ -1,3 +1,7 @@
+use crate::util::color_print::yellow;
+use crate::util::color_print::cyan;
+use crate::util::color_print::red;
+use crate::util::color_print::blue;
 use crate::model::cws::mon::CwsMon;
 use crate::model::cws::cell::CwsCell;
 use crate::model::cws::msg::CwsMsg;
@@ -24,18 +28,20 @@ impl GameState {
         self.map.monsters_visible.clear();
 
         for (tile_index, cell) in cells.into_iter().enumerate() {
+            self.map.tiles[tile_index].update(&cell);
+            
             if let Some(glyph) = cell.g {
                 if glyph == "@" {
                     self.update_map_focus(tile_index as i64);
                 }
-
-                self.map.tiles[tile_index].glyph = glyph;
             }
 
             if let JsonOption::Some(mon) = cell.mon {
-                self.map
-                    .monsters_visible
-                    .insert(mon.id.unwrap(), Monster::from(tile_index as i64, &mon));
+                if let Some(id) = mon.id {
+                    self.map
+                        .monsters_visible
+                        .insert(id, Monster::from(tile_index as i64, &mon));
+                }
             }
         }
     }
@@ -140,7 +146,15 @@ impl GameState {
                 print!("{:02}|", y);
             }
 
-            print!("{}", tile.glyph);
+            if tile.color == 8 {
+                print!("{}", tile.glyph);
+            } else if tile.color == 7 {
+                print!("{}", red(&tile.glyph));
+            } else if tile.color == 6 {
+                print!("{}", yellow(&tile.glyph));
+            } else {
+                print!("{}", blue(&tile.glyph));
+            }
             x += 1;
 
             if x >= Self::MAP_WIDTH {

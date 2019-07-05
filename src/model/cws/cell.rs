@@ -8,6 +8,7 @@ pub struct CwsCell {
     pub x: Option<i64>,
     pub y: Option<i64>,
     pub g: Option<String>,
+    pub col: Option<i64>,
     pub mon: JsonOption<CwsMon>,
 }
 

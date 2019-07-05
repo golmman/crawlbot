@@ -4,6 +4,7 @@ const RED: &str = "\x1B[1;31m";
 const BLUE: &str = "\x1B[1;34m";
 const CYAN: &str = "\x1B[1;36m";
 const GREEN: &str = "\x1B[0;32m";
+const YELLOW: &str = "\x1B[0;33m";
 const RESET: &str = "\x1B[0;0m";
 
 #[allow(dead_code)]
@@ -24,6 +25,11 @@ pub fn cyan(text: &str) -> String {
 #[allow(dead_code)]
 pub fn green(text: &str) -> String {
     format!("{}{}{}", GREEN, text, RESET)
+}
+
+#[allow(dead_code)]
+pub fn yellow(text: &str) -> String {
+    format!("{}{}{}", YELLOW, text, RESET)
 }
 
 #[cfg(test)]
