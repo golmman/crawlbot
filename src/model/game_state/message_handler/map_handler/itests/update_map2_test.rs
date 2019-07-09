@@ -65,7 +65,13 @@ fn update_map2() {
     let map_message_map10: CwsMsg = prepare_cws_msg("tests/examples/maps2/root10.json");
 
     assert_map0(&mut game_state, map_message_map0);
+    println!("{:?}", game_state.map.monsters_visible);
+
     assert_map1(&mut game_state, map_message_map1);
+    println!("{:?}", game_state.map.monsters_visible);
+
+    game_state.print_map();
+
     assert_map2(&mut game_state, map_message_map2);
     assert_map3(&mut game_state, map_message_map3);
     assert_map4(&mut game_state, map_message_map4);
@@ -78,6 +84,6 @@ fn update_map2() {
     // TODO: error here!
     // assert_map10(&mut game_state, map_message_map10);
 
-    game_state.print_map();
+    // game_state.print_map();
 }
 

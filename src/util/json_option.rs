@@ -18,6 +18,13 @@ impl<T> JsonOption<T> {
         }
     }
 
+    pub fn is_undefined(&self) -> bool {
+        match self {
+            JsonOption::Undefined => true,
+            _ => false,
+        }
+    }
+
     pub fn is_null(&self) -> bool {
         match self {
             JsonOption::Null => true,

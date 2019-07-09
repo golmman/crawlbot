@@ -29,7 +29,6 @@ impl GameState {
 
         for (tile_index, cell) in cells.into_iter().enumerate() {
             self.map.tiles[tile_index].update(&cell);
-            
             if let Some(glyph) = cell.g {
                 if glyph == "@" {
                     self.update_map_focus(tile_index as i64);
@@ -51,17 +50,11 @@ impl GameState {
         let mut monster_cells: Vec<(i64, JsonOption<CwsMon>)> = Vec::new();
 
         for cell in cells {
-            if let Some((cell_x, cell_y)) = cell.get_location() {
-                let map_x = cell_x + self.map.focus.0;
-                let map_y = cell_y + self.map.focus.1;
-                tile_index = map_x + map_y * Self::MAP_WIDTH;
-            } else {
-                tile_index += 1;
-            }
+            tile_index = self.update_tile_index(&cell, tile_index);
 
-            if let Some(glyph) = cell.g {
-                self.map.tiles[tile_index as usize].glyph = glyph;
-            }
+            self.map.tiles[tile_index as usize].update(&cell);
+
+            self.remove_visible_monster_by_color(&cell, tile_index);
 
             if cell.mon.is_defined() {
                 monster_cells.push((tile_index, cell.mon));
@@ -72,28 +65,53 @@ impl GameState {
         self.upsert_visible_monsters_by_cellinfo(&monster_cells);
     }
 
+    fn update_tile_index(&self, cell: &CwsCell, old_tile_index: i64) -> i64 {
+        if let Some((cell_x, cell_y)) = cell.get_location() {
+            let map_x = cell_x + self.map.focus.0;
+            let map_y = cell_y + self.map.focus.1;
+            map_x + map_y * Self::MAP_WIDTH
+        } else {
+            old_tile_index + 1
+        }
+    }
+
+    fn find_visible_monster_by_tile_index(&self, tile_index: i64) -> Option<i64> {
+        for monster_visible in self.map.monsters_visible.values() {
+            if monster_visible.tile_index == tile_index {
+                return Some(monster_visible.id);
+            }
+        }
+        None
+    }
+
+    fn remove_visible_monster_by_color(&mut self, cell: &CwsCell, tile_index: i64) {
+        if cell.mon.is_defined() {
+            // if cell.mon is something it is to be handled differently
+            return;
+        }
+        
+        if let Some(mon_id) = self.find_visible_monster_by_tile_index(tile_index) {
+            if cell.col == Some(8) { // if color is "invisible"
+                self.map.monsters_visible.remove(&mon_id);
+            }
+        }
+    }
+
     // TODO: reduce complexity
     fn remove_visible_monsters_by_cellinfo(&mut self, monster_cells: &[(i64, JsonOption<CwsMon>)]) {
-        for (tile_index, mon) in monster_cells {
-            if mon.is_null() {
-                // find mon id in monsters_visible map
-                let mut mon_id_option: Option<i64> = None;
-                for monster_visible in self.map.monsters_visible.values() {
-                    if monster_visible.tile_index == *tile_index {
-                        mon_id_option = Some(monster_visible.id);
-                    }
-                }
-
-                if let Some(mon_id) = mon_id_option {
+        for (tile_index, null_mon) in monster_cells {
+            if null_mon.is_null() {
+                if let Some(mon_id) = self.find_visible_monster_by_tile_index(*tile_index) {
+                    // mon_id was found
                     let mut is_remove = true;
 
-                    for (_, mon_option) in monster_cells {
-                        if let JsonOption::Some(mon2) = mon_option {
-                            if let Some(mon2_id) = mon2.id {
-                                if mon2_id == mon_id {
-                                    is_remove = false;
-                                    break;
-                                }
+                    // try to find a mon in monster_cells with the found mon_id
+                    for (_, cell_mon_option) in monster_cells {
+                        if let JsonOption::Some(cell_mon) = cell_mon_option {
+                            if cell_mon.id == Some(mon_id) {
+                                //  found -> it is still alive
+                                is_remove = false;
+                                break;
                             }
                         }
                     }
@@ -103,7 +121,7 @@ impl GameState {
                         self.map.monsters_visible.remove(&mon_id);
                     }
                 } else {
-                    log_error!("(tile_index, mon): ({:?}, {:?})", tile_index, mon);
+                    log_error!("(tile_index, mon): ({:?}, {:?})", tile_index, null_mon);
                     log_error!("monsters_visible: {:?}", self.map.monsters_visible);
                     panic!("Tried to remove a monster which was not yet created.");
                 }
@@ -127,7 +145,6 @@ impl GameState {
             }
         }
     }
-
 
     fn update_map_focus(&mut self, index: i64) {
         self.map.focus = (index % Self::MAP_WIDTH, index / Self::MAP_WIDTH);
@@ -173,7 +190,6 @@ mod tests {
 
     fn generate_game_state_with_monsters_visible() -> GameState {
         let mut game_state = GameState::new();
-        
         game_state.map.monsters_visible.insert(
             1,
             Monster {
@@ -228,10 +244,8 @@ mod tests {
             ),
             // monster2 vanishes and should be remove
             (20, JsonOption::Null),
-
             // monster3 vanishes and should be removed
             (30, JsonOption::Null),
-
             // monster5 is create
             (
                 50,
