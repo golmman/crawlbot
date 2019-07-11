@@ -65,25 +65,54 @@ fn update_map2() {
     let map_message_map10: CwsMsg = prepare_cws_msg("tests/examples/maps2/root10.json");
 
     assert_map0(&mut game_state, map_message_map0);
-    println!("{:?}", game_state.map.monsters_visible);
+    println!("0 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
 
     assert_map1(&mut game_state, map_message_map1);
-    println!("{:?}", game_state.map.monsters_visible);
-
-    game_state.print_map();
+    println!("1 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
 
     assert_map2(&mut game_state, map_message_map2);
-    assert_map3(&mut game_state, map_message_map3);
-    assert_map4(&mut game_state, map_message_map4);
-    assert_map5(&mut game_state, map_message_map5);
-    assert_map6(&mut game_state, map_message_map6);
-    assert_map7(&mut game_state, map_message_map7);
-    assert_map8(&mut game_state, map_message_map8);
-    assert_map9(&mut game_state, map_message_map9);
+    println!("2 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
 
-    // TODO: error here!
-    // assert_map10(&mut game_state, map_message_map10);
+    assert_map3(&mut game_state, map_message_map3);
+    println!("3 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
+
+    assert_map4(&mut game_state, map_message_map4);
+    println!("4 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
+
+    assert_map5(&mut game_state, map_message_map5);
+    println!("5 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
+
+    assert_map6(&mut game_state, map_message_map6);
+    println!("6 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
+
+    assert_map7(&mut game_state, map_message_map7);
+    println!("7 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
+
+    assert_map8(&mut game_state, map_message_map8);
+    println!("8 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
+
+    assert_map9(&mut game_state, map_message_map9);
+    println!("9 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
+
 
     // game_state.print_map();
+    
+
+    // TODO: error here!
+    assert_map10(&mut game_state, map_message_map10);
+    println!("10 VISIBLE {:?}", game_state.map.monsters_visible);
+    println!("   ASSUMED {:?}", game_state.map.monsters_assumed);
+
+
 }
 

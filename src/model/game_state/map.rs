@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use crate::model::game_state::monster::Monster;
 use crate::model::game_state::tile::Tile;
+use crate::model::game_state::GameState;
 use std::fmt::Debug;
 
 #[derive(Clone)]
@@ -8,6 +9,7 @@ pub struct Map {
     pub focus: (i64, i64),
     // TODO: refactor to a simple array with e.g. 256 elements
     pub monsters_visible: HashMap<i64, Monster>,
+    pub monsters_assumed: HashMap<i64, Monster>,
     pub tiles: Vec<Tile>,
 }
 
@@ -16,7 +18,8 @@ impl Map {
         Self {
             focus: (0, 0),
             monsters_visible: HashMap::new(),
-            tiles: vec![Tile::new(); 80 * 70],
+            monsters_assumed: HashMap::new(),
+            tiles: vec![Tile::new(); (GameState::MAP_WIDTH * GameState::MAP_HEIGHT) as usize],
         }
     }
 }
