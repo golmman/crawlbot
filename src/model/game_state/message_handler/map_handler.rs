@@ -61,7 +61,7 @@ impl GameState {
             }
         }
 
-        self.remove_visible_monsters_by_cellinfo(&monster_cells);
+        self.remove_map_monsters_by_cellinfo(&monster_cells);
         self.upsert_visible_monsters_by_cellinfo(&monster_cells);
     }
 
@@ -108,49 +108,31 @@ impl GameState {
         }
     }
 
-    // TODO: reduce complexity
-    // TODO: rename
-    fn remove_visible_monsters_by_cellinfo(&mut self, monster_cells: &[(i64, JsonOption<CwsMon>)]) {
+    fn contains_mon_id(monster_cells: &[(i64, JsonOption<CwsMon>)], mon_id: i64) -> bool {
+        for (_, cell_mon_option) in monster_cells {
+            if let JsonOption::Some(cell_mon) = cell_mon_option {
+                if cell_mon.id == Some(mon_id) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    fn remove_map_monsters_by_cellinfo(&mut self, monster_cells: &[(i64, JsonOption<CwsMon>)]) {
         for (tile_index, null_mon) in monster_cells {
             if null_mon.is_null() {
-                if let Some(mon_id) = self.find_visible_monster_by_tile_index(*tile_index) {
+                if let Some(visible_mon_id) = self.find_visible_monster_by_tile_index(*tile_index) {
                     // mon_id was found
-                    let mut is_remove = true;
-
-                    // try to find a mon in monster_cells with the found mon_id
-                    for (_, cell_mon_option) in monster_cells {
-                        if let JsonOption::Some(cell_mon) = cell_mon_option {
-                            if cell_mon.id == Some(mon_id) {
-                                //  found -> it is still alive
-                                is_remove = false;
-                                break;
-                            }
-                        }
+                    if !Self::contains_mon_id(monster_cells, visible_mon_id) {
+                        // no corresponding monster found -> remove it
+                        self.map.monsters_visible.remove(&visible_mon_id);
                     }
-
-                    if is_remove {
-                        // remove
-                        self.map.monsters_visible.remove(&mon_id);
-                    }
-                } else if let Some(mon_id) = self.find_assumed_monster_by_tile_index(*tile_index) {
-                    // TODO: outsource, as it is essentially the same as above
+                } else if let Some(assumed_mon_id) = self.find_assumed_monster_by_tile_index(*tile_index) {
                     // mon_id was found
-                    let mut is_remove = true;
-
-                    // try to find a mon in monster_cells with the found mon_id
-                    for (_, cell_mon_option) in monster_cells {
-                        if let JsonOption::Some(cell_mon) = cell_mon_option {
-                            if cell_mon.id == Some(mon_id) {
-                                //  found -> it is still alive
-                                is_remove = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    if is_remove {
-                        // remove
-                        self.map.monsters_assumed.remove(&mon_id);
+                    if !Self::contains_mon_id(monster_cells, assumed_mon_id) {
+                        // no corresponding monster found -> remove it
+                        self.map.monsters_assumed.remove(&assumed_mon_id);
                     }
                 } else {
                     log_error!("(tile_index, mon): ({:?}, {:?})", tile_index, null_mon);
@@ -170,16 +152,14 @@ impl GameState {
                     monster_visible.update(*tile_index, &mon);
                 } else {
                     // create
-                    if let Some(mon_id) = self.find_assumed_monster_by_tile_index(*tile_index) {
+                    if let Some(assumed_mon_id) = self.find_assumed_monster_by_tile_index(*tile_index) {
                         // found a matching assumed monster
-                        if let Some(mut monster_assumed) = self.map.monsters_assumed.remove(&mon_id) {
+                        if let Some(mut monster_assumed) = self.map.monsters_assumed.remove(&assumed_mon_id) {
                             // insert with updated mon id
                             let new_mon_id = mon.id.unwrap();
                             monster_assumed.id = new_mon_id;
 
-                            self.map
-                                .monsters_visible
-                                .insert(new_mon_id, monster_assumed);
+                            self.map.monsters_visible.insert(new_mon_id, monster_assumed);
                         }
                     } else {
                         // not an assumed monster, simply insert
@@ -307,12 +287,12 @@ mod tests {
     }
 
     #[test]
-    fn remove_visible_monsters_by_cellinfo() {
+    fn remove_map_monsters_by_cellinfo() {
         let mut game_state = generate_game_state_with_monsters_visible();
 
         let monster_cells_tmp = generate_monster_cells();
 
-        game_state.remove_visible_monsters_by_cellinfo(&monster_cells_tmp);
+        game_state.remove_map_monsters_by_cellinfo(&monster_cells_tmp);
 
         let mv = &game_state.map.monsters_visible;
         assert_eq!(2, mv.len());
