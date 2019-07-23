@@ -18,6 +18,8 @@ fn assert_map0(game_state: &mut GameState, map: CwsMsg) {
         get_tile_index(63, 50) as i64,
         game_state.map.monsters_visible.get(&RAT_ID).unwrap().tile_index
     );
+
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 fn assert_map1(game_state: &mut GameState, map: CwsMsg) {
@@ -34,6 +36,8 @@ fn assert_map1(game_state: &mut GameState, map: CwsMsg) {
         get_tile_index(62, 51) as i64,
         game_state.map.monsters_visible.get(&RAT_ID).unwrap().tile_index
     );
+
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 fn assert_map2(game_state: &mut GameState, map: CwsMsg) {
@@ -50,6 +54,8 @@ fn assert_map2(game_state: &mut GameState, map: CwsMsg) {
         get_tile_index(61, 52) as i64,
         game_state.map.monsters_visible.get(&RAT_ID).unwrap().tile_index
     );
+
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 #[test]

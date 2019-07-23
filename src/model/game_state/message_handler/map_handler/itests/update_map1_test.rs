@@ -11,6 +11,7 @@ fn assert_map0(game_state: &mut GameState, map: CwsMsg) {
     assert_eq!("@", game_state.map.tiles[get_tile_index(20, 18)].glyph);
     assert_eq!("l", game_state.map.tiles[get_tile_index(17, 18)].glyph);
     assert_eq!("g", game_state.map.tiles[get_tile_index(18, 16)].glyph);
+    
     assert_eq!(2, game_state.map.monsters_visible.len());
     assert_eq!(
         get_tile_index(17, 18) as i64,
@@ -20,6 +21,8 @@ fn assert_map0(game_state: &mut GameState, map: CwsMsg) {
         get_tile_index(18, 16) as i64,
         game_state.map.monsters_visible.get(&GOBLIN_ID).unwrap().tile_index
     );
+    
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 fn assert_map1(game_state: &mut GameState, map: CwsMsg) {
@@ -27,6 +30,7 @@ fn assert_map1(game_state: &mut GameState, map: CwsMsg) {
     assert_eq!("@", game_state.map.tiles[get_tile_index(19, 17)].glyph);
     assert_eq!("l", game_state.map.tiles[get_tile_index(18, 17)].glyph);
     assert_eq!("g", game_state.map.tiles[get_tile_index(18, 16)].glyph);
+    
     assert_eq!(2, game_state.map.monsters_visible.len());
     assert_eq!(
         get_tile_index(18, 17) as i64,
@@ -36,6 +40,8 @@ fn assert_map1(game_state: &mut GameState, map: CwsMsg) {
         get_tile_index(18, 16) as i64,
         game_state.map.monsters_visible.get(&GOBLIN_ID).unwrap().tile_index
     );
+
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 fn assert_map2(game_state: &mut GameState, map: CwsMsg) {
@@ -43,30 +49,42 @@ fn assert_map2(game_state: &mut GameState, map: CwsMsg) {
     assert_eq!("@", game_state.map.tiles[get_tile_index(19, 17)].glyph);
     assert_eq!("l", game_state.map.tiles[get_tile_index(18, 17)].glyph);
     assert_eq!(".", game_state.map.tiles[get_tile_index(18, 16)].glyph);
+    
     assert_eq!(1, game_state.map.monsters_visible.len());
     assert_eq!(
         get_tile_index(18, 17) as i64,
         game_state.map.monsters_visible.get(&LIZARD_ID).unwrap().tile_index
     );
+
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 fn assert_map3(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
     assert_eq!("@", game_state.map.tiles[get_tile_index(19, 17)].glyph);
     assert_eq!("†", game_state.map.tiles[get_tile_index(18, 17)].glyph);
+    
     assert_eq!(0, game_state.map.monsters_visible.len());
+
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 fn assert_map4(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
     assert_eq!("@", game_state.map.tiles[get_tile_index(18, 16)].glyph);
+
     assert_eq!(0, game_state.map.monsters_visible.len());
+
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 fn assert_map5(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
     assert_eq!("@", game_state.map.tiles[get_tile_index(19, 15)].glyph);
+    
     assert_eq!(0, game_state.map.monsters_visible.len());
+
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 

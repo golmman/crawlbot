@@ -11,6 +11,7 @@ fn assert_map0(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
 
     assert_eq!(3, game_state.map.monsters_visible.len());
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 
     assert_eq!(
         &Monster {

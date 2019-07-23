@@ -2,50 +2,358 @@ use crate::model::cws::msg::CwsMsg;
 use crate::model::game_state::GameState;
 use crate::model::game_state::message_handler::map_handler::itests::utils::*;
 
-const RAT_ID: i64 = 2;
-
 fn assert_map0(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("l", game_state.map.tiles[get_tile_index(32, 48)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(36, 48)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(35, 49)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(36, 50)].glyph);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(34, 53)].glyph);
+    
+    assert_eq!(4, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(32, 48) as i64,
+        game_state.map.monsters_visible.get(&4).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_visible.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_visible.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_visible.get(&1).unwrap().tile_index
+    );
+    
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 fn assert_map1(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("l", game_state.map.tiles[get_tile_index(33, 49)].glyph);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(33, 52)].glyph);
+    
+    assert_eq!(1, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 49) as i64,
+        game_state.map.monsters_visible.get(&4).unwrap().tile_index
+    );
+    
+    assert_eq!(3, game_state.map.monsters_assumed.len());
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_assumed.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_assumed.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_assumed.get(&1).unwrap().tile_index
+    );
 }
 
 fn assert_map2(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("l", game_state.map.tiles[get_tile_index(33, 50)].glyph);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(33, 51)].glyph);
+    
+    assert_eq!(1, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 50) as i64,
+        game_state.map.monsters_visible.get(&4).unwrap().tile_index
+    );
+    
+    assert_eq!(3, game_state.map.monsters_assumed.len());
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_assumed.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_assumed.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_assumed.get(&1).unwrap().tile_index
+    );
 }
 
 fn assert_map3(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("l", game_state.map.tiles[get_tile_index(33, 50)].glyph);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(33, 51)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(34, 53)].glyph);
+    
+    assert_eq!(2, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 50) as i64,
+        game_state.map.monsters_visible.get(&4).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(34, 53) as i64,
+        game_state.map.monsters_visible.get(&5).unwrap().tile_index
+    );
+    
+    assert_eq!(3, game_state.map.monsters_assumed.len());
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_assumed.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_assumed.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_assumed.get(&1).unwrap().tile_index
+    );
 }
 
 fn assert_map4(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("l", game_state.map.tiles[get_tile_index(33, 50)].glyph);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(33, 51)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 52)].glyph);
+    
+    assert_eq!(2, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 50) as i64,
+        game_state.map.monsters_visible.get(&4).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(33, 52) as i64,
+        game_state.map.monsters_visible.get(&5).unwrap().tile_index
+    );
+    
+    assert_eq!(3, game_state.map.monsters_assumed.len());
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_assumed.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_assumed.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_assumed.get(&1).unwrap().tile_index
+    );
 }
 
 fn assert_map5(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("l", game_state.map.tiles[get_tile_index(33, 50)].glyph);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(33, 51)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 52)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(34, 53)].glyph);
+    
+    assert_eq!(3, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 50) as i64,
+        game_state.map.monsters_visible.get(&4).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(33, 52) as i64,
+        game_state.map.monsters_visible.get(&5).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(34, 53) as i64,
+        game_state.map.monsters_visible.get(&6).unwrap().tile_index
+    );
+    
+    assert_eq!(3, game_state.map.monsters_assumed.len());
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_assumed.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_assumed.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_assumed.get(&1).unwrap().tile_index
+    );
 }
 
 fn assert_map6(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(33, 51)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 52)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(34, 53)].glyph);
+    
+    assert_eq!(2, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 52) as i64,
+        game_state.map.monsters_visible.get(&5).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(34, 53) as i64,
+        game_state.map.monsters_visible.get(&6).unwrap().tile_index
+    );
+    
+    assert_eq!(3, game_state.map.monsters_assumed.len());
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_assumed.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_assumed.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_assumed.get(&1).unwrap().tile_index
+    );
 }
 
 fn assert_map7(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(33, 50)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 51)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 52)].glyph);
+    
+    assert_eq!(2, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 51) as i64,
+        game_state.map.monsters_visible.get(&5).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(33, 52) as i64,
+        game_state.map.monsters_visible.get(&6).unwrap().tile_index
+    );
+    
+    assert_eq!(3, game_state.map.monsters_assumed.len());
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_assumed.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_assumed.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_assumed.get(&1).unwrap().tile_index
+    );
 }
 
 fn assert_map8(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(33, 49)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 51)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 52)].glyph);
+    
+    assert_eq!(2, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 51) as i64,
+        game_state.map.monsters_visible.get(&6).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(33, 52) as i64,
+        game_state.map.monsters_visible.get(&5).unwrap().tile_index
+    );
+    
+    assert_eq!(3, game_state.map.monsters_assumed.len());
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_assumed.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_assumed.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_assumed.get(&1).unwrap().tile_index
+    );
 }
 
 fn assert_map9(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(33, 48)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 51)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 52)].glyph);
+    
+    assert_eq!(2, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 51) as i64,
+        game_state.map.monsters_visible.get(&6).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(33, 52) as i64,
+        game_state.map.monsters_visible.get(&5).unwrap().tile_index
+    );
+    
+    assert_eq!(3, game_state.map.monsters_assumed.len());
+    assert_eq!(
+        get_tile_index(36, 48) as i64,
+        game_state.map.monsters_assumed.get(&3).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 49) as i64,
+        game_state.map.monsters_assumed.get(&2).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_assumed.get(&1).unwrap().tile_index
+    );
 }
 
 fn assert_map10(game_state: &mut GameState, map: CwsMsg) {
     game_state.update_map(map);
+
+    assert_eq!((34, 53), game_state.map.focus);
+    assert_eq!("@", game_state.map.tiles[get_tile_index(34, 47)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 50)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(36, 50)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(33, 51)].glyph);
+    assert_eq!("g", game_state.map.tiles[get_tile_index(35, 51)].glyph);
+    
+    assert_eq!(4, game_state.map.monsters_visible.len());
+    assert_eq!(
+        get_tile_index(33, 50) as i64,
+        game_state.map.monsters_visible.get(&6).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(36, 50) as i64,
+        game_state.map.monsters_visible.get(&7).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(33, 51) as i64,
+        game_state.map.monsters_visible.get(&5).unwrap().tile_index
+    );
+    assert_eq!(
+        get_tile_index(35, 51) as i64,
+        game_state.map.monsters_visible.get(&8).unwrap().tile_index
+    );
+    
+    assert_eq!(0, game_state.map.monsters_assumed.len());
 }
 
 #[test]
@@ -65,54 +373,15 @@ fn update_map2() {
     let map_message_map10: CwsMsg = prepare_cws_msg("tests/examples/maps2/root10.json");
 
     assert_map0(&mut game_state, map_message_map0);
-    println!("0 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
     assert_map1(&mut game_state, map_message_map1);
-    println!("1 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
     assert_map2(&mut game_state, map_message_map2);
-    println!("2 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
     assert_map3(&mut game_state, map_message_map3);
-    println!("3 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
     assert_map4(&mut game_state, map_message_map4);
-    println!("4 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
     assert_map5(&mut game_state, map_message_map5);
-    println!("5 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
     assert_map6(&mut game_state, map_message_map6);
-    println!("6 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
     assert_map7(&mut game_state, map_message_map7);
-    println!("7 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
     assert_map8(&mut game_state, map_message_map8);
-    println!("8 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
     assert_map9(&mut game_state, map_message_map9);
-    println!("9 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("  ASSUMED {:?}", game_state.map.monsters_assumed);
-
-
-    // game_state.print_map();
-    
-
-    // TODO: error here!
     assert_map10(&mut game_state, map_message_map10);
-    println!("10 VISIBLE {:?}", game_state.map.monsters_visible);
-    println!("   ASSUMED {:?}", game_state.map.monsters_assumed);
-
-
 }
 
