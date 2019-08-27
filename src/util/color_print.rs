@@ -38,9 +38,9 @@ mod tests {
 
     #[test]
     fn colors() {
-        println!("Her is some {} text.", red("red colored"));
-        println!("Her is some {} text.", blue("blue colored"));
-        println!("Her is some {} text.", cyan("cyan colored"));
-        println!("Her is some {} text.", green("green colored"));
+        println!("Here is some {} text.", red("red colored"));
+        println!("Here is some {} text.", blue("blue colored"));
+        println!("Here is some {} text.", cyan("cyan colored"));
+        println!("Here is some {} text.", green("green colored"));
     }
 }
